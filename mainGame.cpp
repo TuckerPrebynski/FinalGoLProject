@@ -14,7 +14,8 @@ using namespace std;
 //   playEvent();
 //   change player
 
-
+//Compile command
+// g++ mainGame.cpp BoardDriver.cpp -lncurses -DNCURSES_STATIC 
 
 int main(int argc, char **argv)
 {

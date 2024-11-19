@@ -15,13 +15,7 @@ using namespace std;
 #define TRAVELER_COLOR 6
 #define CHALLENGE_COLOR 7
 
-struct Tile
-{
-    int color = 1;
-    int idx = 1;
-    char type = ' ';
-    string disp = "| |";
-};
+
 
 Board::Board(WINDOW *win_in, int player_count)
 {

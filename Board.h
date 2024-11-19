@@ -6,6 +6,13 @@
 using namespace std;
 #ifndef BOARD_H
 #define BOARD_H
+struct Tile
+{
+    int color = 1;
+    int idx = 1;
+    char type = ' ';
+    string disp = "| |";
+};
 class Board
 {
 private:
