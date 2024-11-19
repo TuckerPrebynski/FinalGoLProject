@@ -269,11 +269,13 @@ void Board::drawPlayers(Player players[], int player_count)
 }
 void Board::displayBoard()
 {
+    box(board, 0, 0);
     mvwaddstr(board, 0, 1, "Game Board");
     mvwaddstr(board, 1, 2, "Didn't Pack");
     mvwaddstr(board, 3, 2, "Did Pack");
     for (int i = 0; i < 2; i++)
     {
+        
         wmove(board, 2 + i * 2, 3);
         drawTiles(i);
     }
