@@ -92,25 +92,30 @@ void Menu::getFromFile(string fileName){
     ifstream inFile(fileName);
     
     string temp;
+    string temp1;
     string temp2;
+    string temp3;
+
     getline(inFile,temp);
-    while(getline(inFile,temp2)){
-        stringstream input(temp2);
+    while(getline(inFile,temp)){
+        stringstream input(temp);
 
-        getline(input,temp,'|');
+        getline(input,temp1,'|');
         const char *cTemp = temp.c_str(); //stupid voodoo to get ncurses to like cstrings
-        choices.push_back(cTemp);
+        choices.push_back(temp1.c_str());
 
         getline(input,temp,'|');
-        const char *cTemp1 = temp.c_str();
-        choiceText.push_back(cTemp1);
+        const char *cTemp1 = temp2.c_str();
+        choiceText.push_back(temp2.c_str());
 
-        getline(input,temp,'|');
-        const char *cTemp2 = temp.c_str();
-        choiceText2.push_back(cTemp2);
+        getline(input,temp3,'|');
+        const char* cTemp2 = temp3.c_str();
+        choiceText2.push_back("test");
     }
-
-    changeChoices(choices,choiceText,choiceText2);
+    
+    _choices = choices;
+    _choiceText = choiceText;
+    _choiceText2 = choiceText2;
 }
 int Menu::getChoice(int x, int y){
     int choice;
