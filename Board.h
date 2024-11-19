@@ -42,15 +42,15 @@ private:
     }
     /// @brief Draw players over drawn board
     /// @param players array of player objects
-    /// @param player_count number of players
-    void drawPlayers(Player players[], int player_count);
+    void drawPlayers(Player players[]);
 
 public:
-    Board(WINDOW *win_in, int player_count);
-
+    Board();
+    Board(WINDOW *win_in);
     /// @brief Initalize board object
     void initializeBoard();
     /// @brief Display Board to board window
-    void displayBoard();
+    void displayBoard(Player players[]);
+    void setPlayerCount(int player_count);
 };
 #endif

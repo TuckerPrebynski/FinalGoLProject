@@ -15,11 +15,18 @@ using namespace std;
 #define TRAVELER_COLOR 6
 #define CHALLENGE_COLOR 7
 
+Board::Board()
+{
+//intentionally blank, uninitilaized boards should never be called.
+}
 
-
-Board::Board(WINDOW *win_in, int player_count)
+Board::Board(WINDOW *win_in)
 {
     board = win_in;
+    _player_count = 0;
+    
+}
+void Board::setPlayerCount(int player_count){
     _player_count = player_count;
 }
 Tile Board::fillTile(Tile tile, char type)
@@ -225,13 +232,13 @@ void Board::drawTiles(int track)
         wattroff(board, COLOR_PAIR(_tiles[track][i].color));
     }
 }
-void Board::drawPlayers(Player players[], int player_count)
+void Board::drawPlayers(Player players[])
 {
     vector<int> topRoute;
     vector<int> btmRoute;
     int playerPos[2];
 
-    for (int i = 0; i < player_count; i++)
+    for (int i = 0; i < _player_count; i++)
     {
         players[i].getPos(playerPos);
         int count = 0;
@@ -267,7 +274,7 @@ void Board::drawPlayers(Player players[], int player_count)
         mvwaddch(board, ((2 + playerPos[0] * 2) + offset[0]), (3 + playerPos[1] + offset[1]), players[i].getMeeple());
     }
 }
-void Board::displayBoard()
+void Board::displayBoard(Player players[])
 {
     box(board, 0, 0);
     mvwaddstr(board, 0, 1, "Game Board");
@@ -279,4 +286,5 @@ void Board::displayBoard()
         wmove(board, 2 + i * 2, 3);
         drawTiles(i);
     }
+    drawPlayers(players);
 }

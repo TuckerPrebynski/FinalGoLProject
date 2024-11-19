@@ -1,0 +1,6 @@
+playerName|age|strength|stamina|provisions|bugs
+Apollo|as|5|500|500|1000|20000
+Mane|bs|8|900|600|600|20000
+Elsa|cs|12|900|700|500|20000
+Zuri|ds|7|600|500|900|20000
+Roary|zs|18|1000|500|500|20000

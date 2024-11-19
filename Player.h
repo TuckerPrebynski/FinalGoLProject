@@ -7,6 +7,7 @@ class Player
 {
 private:
     string _name;
+    string _playerName;
     int _strength, _stamina, _provisions, _bugs_points, _age;
     int _board;
     int _idx, _lastIdx;
@@ -34,6 +35,7 @@ public:
     Player()
     {
         _name = "";
+        
         _strength = 100;
         _stamina = 100;
         _provisions = 100;
@@ -43,14 +45,14 @@ public:
         _meeple = '@';
     }
     // Creates a new instance of Player with _name, _strength, _stamina and _provisions coming from the parameters. If the parameters are outside of the accepted range of values, use the minimum accepted value instead. _bugs_points should default to 0, and _age should default to 1.
-    Player(string name, int strength, int stamina, int provisions, char rep)
+    Player(string name, int age, int strength, int stamina, int provisions, int bugs, char rep)
     {
         _name = name;
         _strength = ((strength <= 1000) && (strength >= 100)) ? strength : 100;
         _stamina = ((stamina <= 1000) && (stamina >= 100)) ? stamina : 100;
         _provisions = ((provisions <= 1000) && (provisions >= 100)) ? provisions : 100;
-        _bugs_points = 0;
-        _age = 1;
+        _bugs_points = bugs;
+        _age = age;
         _idx = 0;
         _meeple = rep;
     }

@@ -1,9 +1,12 @@
 #include <iostream>
 #include "Player.h"
 #include "Board.h"
+#include "Interface.h"
 #include <ncurses/ncurses.h>
 #include <random>
 #include <vector>
+#include <fstream>
+#include <sstream>
 using namespace std;
 
 
@@ -15,93 +18,74 @@ using namespace std;
 //   change player
 
 //Compile command
-// g++ mainGame.cpp BoardDriver.cpp -lncurses -DNCURSES_STATIC 
+// g++ mainGame.cpp BoardDriver.cpp MenuDriver.cpp -lncurses -DNCURSES_STATIC 
 
-
-/// @brief iterate through choices on a list, and see if the given mouse pos hits one
-/// @param x mouse x
-/// @param y mouse y
-/// @param winx window x
-/// @param winy window y
-/// @param posx first choice x
-/// @param posy first choice y
-/// @param clength length of longest choice
-/// @param ccount number of choices
-/// @return returns number of choice selected, or -1 if not a hit.
-int reportChoice(int x, int y, int winx, int winy, int posx, int posy, int clength, int ccount){
-    int topCornerx = winx+posx;
-    int topCornery = winy+posy;
-    for(int i = 0; i< ccount ;i ++){
-        if(y == (topCornery+i)){
-            if( (x >= topCornerx) &&(x < topCornerx+clength)){
-                return i;
-            }
-            break;
-        }
-    }
-    return -1;            
-
+class Game{
+    public: 
+        Board _board;
+        int _numPlayers = 0;
+        Player _players[4];
+        WINDOW *_BOARD;
+        Game(WINDOW *BOARD);
+        void displayBoard();
+        void playerSelect(WINDOW *menuWin);
+};
+Game::Game(WINDOW *BOARD){
+    _board = Board(BOARD);
+    _BOARD = BOARD;
+    _numPlayers = 0;
+    _players[4];
 }
+void Game::displayBoard(){
+    _board.initializeBoard();
+    _board.displayBoard(_players);
+    wrefresh(_BOARD);
+}
+void Game::playerSelect(WINDOW *menuWin){
+    
+    
+    Menu startMenu(menuWin,"Entomology Trek", 
+        {"Welcome to a glorious", "safari adventure where ","you will, uh, collect bugs.","Please select # of players", "  Arrows to move,", "  Enter to select"}
+        ,{"1","2","3","4"},{});
 
-void startGame(WINDOW *menu){
-    int selfx, selfy;
-    getbegyx(menu,selfy,selfx);
-    box(menu, 0, 0);
-    mvwaddstr(menu, 0, 1, "Entomology Trek");
-    mvwaddstr(menu, 2, 4, "Welcome to a ");
-    mvwaddstr(menu, 3, 2, "glorious safari ");
-    mvwaddstr(menu, 4, 2, "adventure where ");
-    mvwaddstr(menu, 5, 2, "you will, uh, ");
-    mvwaddstr(menu, 6, 2, "collect bugs.");
-    mvwaddstr(menu, 7, 4, "Please select ");
-    mvwaddstr(menu, 8, 2, "number of players");
-    mvwaddstr(menu, 9, 4, "1");
-    mvwaddstr(menu, 10, 4, "2");
-    mvwaddstr(menu, 11, 4, "3");
-    mvwaddstr(menu, 12, 4, "4");
+    startMenu.displayMenu();
+    _numPlayers = startMenu.getChoice(7,2) + 1;
+    
+    Menu characterMenu(menuWin, "Character Selection",{"Select your Character","strength|stamina|provis|bugs"});
+    characterMenu.getFromFile("characters.txt");
+    string nameTitle = "Player 1";
+    Menu playerMenu(menuWin,nameTitle,{"Enter your name: "});
+    
+    
+    for(int i = 0; i<_numPlayers;i++){
+        nameTitle[7] = i+'1';
+        playerMenu.changeName(nameTitle);
+        playerMenu.displayMenu();
+        string pName = playerMenu.enterText(3,2);
+        characterMenu.displayMenu();
 
-    mousemask(ALL_MOUSE_EVENTS, NULL);
-    MEVENT event;
-
-    while(1)
-	{	int c = wgetch(menu);
-		switch(c)
-		{	case KEY_MOUSE:
-			if(getmouse(&event) == OK)
-			{	/* When the user clicks left mouse button */
-				if(event.bstate & BUTTON1_PRESSED)
-				{	int pChoice = reportChoice(event.x + 1, event.y + 1,selfx,selfy,12,4,4,4);
-					
-					mvwprintw(menu,3, 1, "Choice made is : %d", event.x);
-					wrefresh(menu); 
-				}
-			}
-			//break;
-		}
-	}
-    wrefresh(menu);
+        _players[i] = characterMenu.processCharacterSelection(characterMenu.getChoice(4,2),pName,i+'1');
+    }
+    _board.setPlayerCount(_numPlayers);
+    
 }
 int main(int argc, char **argv)
 {
     srand(time(0));
     // init screen and sets up screen
     initscr();
-    WINDOW *startMenu = newwin(15, 20, LINES/2-7, COLS/2-5);
-    WINDOW *board = newwin(7, 200, LINES-10, 1);
-    // init major objects
-    Board map(board, 2);
-    map.initializeBoard();
+    noecho();
+    cbreak();
     
-
-
     refresh();
-    startGame(startMenu);
+    WINDOW *menuWin = newwin(15, 30, LINES/2-10, COLS/2-5);
+    WINDOW *boardWin = newwin(7, 200, LINES-10, 1);
+    Game gameState(boardWin); 
+    gameState.playerSelect(menuWin);
+    gameState.displayBoard();
+
     
-    // print to screen
-
-    map.displayBoard();
-
-    wrefresh(board);
+    
 
     // pause the screen output
     getch();
