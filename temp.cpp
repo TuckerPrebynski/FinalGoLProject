@@ -1,45 +1,45 @@
 #include <iostream>
-#include <ncurses/ncurses.h>
+//#include <ncurses/ncurses.h>
 #include <random>
 #include <vector>
 #include <fstream>
 #include <sstream>
 using namespace std;
-void getFromFile(string fileName){
-    vector <const char*> choices; 
-    vector <string> choiceText; 
-    vector <string> choiceText2;
-    ifstream inFile(fileName);
-    
-    string temp;
-    string temp1;
-    string temp2;
-    string temp3;
-
-    getline(inFile,temp);
-    while(true){
-        if (!getline(inFile,temp)){
-            break;
+bool checkSort(int arrIn[4],int len){
+    for(int i = 0; i < len-1;i++){
+        if(arrIn[i] >= arrIn[i+1]){
+            return false;
         }
-        cout << temp << endl;
-        stringstream input(temp);
-        getline(input,temp1,'|');
-        const char *cTemp = temp.c_str(); //stupid voodoo to get ncurses to like cstrings
-        choices.push_back(temp1.c_str());
-
-        getline(input,temp,'|');
-        const char *cTemp1 = temp2.c_str();
-        choiceText.push_back(temp2.c_str());
-
-        getline(input,temp3,'|');
-        const char* cTemp2 = temp3.c_str();
-        choiceText2.push_back("test");
     }
-    
-    for(int i = 0; i < choices.size();i++){
-        cout << choices.size() << choices[i] << choiceText[i] << choiceText2[i] << endl;
+    return true;
+}
+void sorting(int arrIn[4], int len){
+    //shotgun shot
+    if(len > 1){
+    int sortInd = rand()%len;
+    int temp;
+    if(arrIn[0+sortInd] >= arrIn[1+sortInd]){
+        temp = arrIn[1+sortInd];
+        arrIn[1+sortInd] = arrIn[0+sortInd];
+        arrIn[0+sortInd] = temp;
+    }
+    cout << sortInd << ":" ;
     }
 }
+
 int main(){
-    getFromFile("characters.txt");
+    int myArr[4] = { 1231251,5321,1234,0 };
+    do{
+        sorting(myArr);
+        for(int i = 0; i<4;i++){
+            cout <<myArr[i] <<' ';
+        }
+        cout <<endl;
+    }while(!checkSort(myArr,4));
+    cout << "Sorted!" << endl;
+    for(int i = 0; i<4;i++){
+            cout <<myArr[i] <<' ';
+        }
+    cout <<endl;
+
 }

@@ -2,14 +2,18 @@
 #include "Player.h"
 #include "Board.h"
 #include "Interface.h"
+#if defined(_WIN32)
 #include <ncurses/ncurses.h>
+#else
+#include <ncurses.h>
+#endif
 #include <random>
 #include <vector>
 #include <fstream>
 #include <sstream>
 using namespace std;
 
-Menu::Menu(WINDOW *winIn, string name, vector <const char*> text, vector <const char*> choices, vector <const char*> choiceText){
+Menu::Menu(WINDOW *winIn, string name, vector <string> text, vector <string> choices, vector <string> choiceText){
     MENU = winIn;
     _name = name;
     _text = text;
@@ -17,7 +21,7 @@ Menu::Menu(WINDOW *winIn, string name, vector <const char*> text, vector <const 
     _choiceText = choiceText;
     idx = -1;
 }
-Menu::Menu(WINDOW *winIn, string name, vector <const char*> text, vector <const char*> choices, vector <const char*> choiceText, vector <const char*> choiceText2){
+Menu::Menu(WINDOW *winIn, string name, vector <string> text, vector <string> choices, vector <string> choiceText, vector <string> choiceText2){
     MENU = winIn;
     _name = name;
     _text = text;
@@ -26,7 +30,7 @@ Menu::Menu(WINDOW *winIn, string name, vector <const char*> text, vector <const 
     _choiceText2 = choiceText2;
     idx = -1;
 }
-Menu::Menu(WINDOW *winIn, string name, vector <const char*> text){
+Menu::Menu(WINDOW *winIn, string name, vector <string> text){
     MENU = winIn;
     _name = name;
     _text = text;
@@ -39,21 +43,24 @@ void Menu::displayMenu(){
     int yoff = 1;
     for(int i = 0; i < _text.size(); i++){
         yoff = (i == 0) ? yoff+2: 1;
-        mvwaddstr(MENU, 1 + i, yoff, _text[i]);
+        const char* cText = _text[i].c_str();
+        mvwaddstr(MENU, 1 + i, yoff, cText);
     }
+    wrefresh(MENU);
 }
 void Menu::changeName(string name){
     _name = name;
 }
-void Menu::changeChoices(vector <const char*> choices, vector <const char*> choiceText, vector <const char*> choiceText2){
+void Menu::changeChoices(vector <string> choices, vector <string> choiceText, vector <string> choiceText2){
     _choices = choices;
     _choiceText = choiceText;
     _choiceText2 = choiceText2;
 }
-void Menu::displayChoiceSelection(int x, int y, vector <const char*> choiceSet, int sep, int highlight){
+void Menu::displayChoiceSelection(int x, int y, vector <string> choiceSet, int sep, int highlight){
     for(int i = 0; i < choiceSet.size(); i++){
         if(i == highlight){wattron(MENU,A_STANDOUT);}
-        mvwaddstr(MENU, x + i*sep, y, choiceSet[i]);
+        const char* cChoice = choiceSet[i].c_str();
+        mvwaddstr(MENU, x + i*sep, y, cChoice);
         if(i == highlight){wattroff(MENU,A_STANDOUT);}
     }
     //DEBUG mvwprintw(MENU, x + 4*sep, y, "index: %d",idx);
@@ -72,7 +79,7 @@ int Menu::selectChoice(int x, int y){
     } else{
         displayChoiceSelection(x,y,_choices,1,idx);
     }
-    
+    refresh();
     wrefresh(MENU);
     int ch;
     ch = wgetch(MENU);
@@ -86,9 +93,9 @@ int Menu::selectChoice(int x, int y){
     return -1;
 }
 void Menu::getFromFile(string fileName){
-    vector <const char*> choices; 
-    vector <const char*> choiceText; 
-    vector <const char*> choiceText2;
+    vector <string> choices; 
+    vector <string> choiceText; 
+    vector <string> choiceText2;
     ifstream inFile(fileName);
     
     string temp;
@@ -101,16 +108,16 @@ void Menu::getFromFile(string fileName){
         stringstream input(temp);
 
         getline(input,temp1,'|');
-        const char *cTemp = temp.c_str(); //stupid voodoo to get ncurses to like cstrings
+        //stupid voodoo to get ncurses to like cstrings
         choices.push_back(temp1.c_str());
 
         getline(input,temp,'|');
-        const char *cTemp1 = temp2.c_str();
+        
         choiceText.push_back(temp2.c_str());
 
         getline(input,temp3,'|');
-        const char* cTemp2 = temp3.c_str();
-        choiceText2.push_back("test");
+        
+        choiceText2.push_back(temp3.c_str());
     }
     
     _choices = choices;
@@ -133,6 +140,7 @@ string Menu::enterText(int x, int y){
     wattroff(MENU,A_STANDOUT);
     wmove(MENU,x,y);
     while(1){
+        refresh();
         wrefresh(MENU);
         input = wgetch(MENU);
         if((input == KEY_ENTER)||(input == '\n')){

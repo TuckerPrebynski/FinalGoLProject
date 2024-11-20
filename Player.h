@@ -1,8 +1,13 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include <iostream>
+#include <sstream>
 using namespace std;
-
+struct Stats{
+    string name;
+    int points;
+    string display;
+};
 class Player
 {
 private:
@@ -132,7 +137,16 @@ public:
         _board = 0;
     }
     // This function should print all of the data members in an organized stats message.
-    void printStats();
+    Stats printStats(){
+        Stats pStat;
+        pStat.name = _name;
+        pStat.points = _bugs_points; 
+        stringstream statsOut; 
+        statsOut <<"|"<<_age<<"|"<<_strength<<"|"<<_stamina<<"|"<<_provisions;
+
+        statsOut >> pStat.display;
+        return pStat;
+    }
 };
 
 #endif
