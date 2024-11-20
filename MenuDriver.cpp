@@ -111,11 +111,11 @@ void Menu::getFromFile(string fileName){
         //stupid voodoo to get ncurses to like cstrings
         choices.push_back(temp1.c_str());
 
-        getline(input,temp,'|');
+        getline(input,temp2,'|');
         
         choiceText.push_back(temp2.c_str());
 
-        getline(input,temp3,'|');
+        getline(input,temp3);
         
         choiceText2.push_back(temp3.c_str());
     }

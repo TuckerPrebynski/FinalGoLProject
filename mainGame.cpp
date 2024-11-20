@@ -31,19 +31,28 @@ public:
     int _turn = 0;
     Player _players[4];
     WINDOW *_BOARD;
-    Game(WINDOW *BOARD);
+    WINDOW *_MENU;
+    WINDOW * _STATS;
+    Game(WINDOW *BOARD, WINDOW *MENU, WINDOW * STATS);
     void displayBoard();
-    void playerSelect(WINDOW *menuWin, WINDOW *statsWin);
-    void displayStats(WINDOW *statsWin);
-
+    /// @brief run the start/player select routine
+    void playerSelect();
+    /// @brief Display the leaderboard
+    void displayStats();
+    /// @brief populate given array of numbers 1-4 indicating the ordered positions of each player object;
+    /// @param players array of Stats objects to rank
+    /// @param oldPositionArray the array to output the ranks to
+    void generatePositionArray(Stats players[4],int oldPositionArray[4]);
 private:
-    bool checkSort(Stats arrIn[4]);
-    void shotgunSort(Stats arrIn[4]);
+    int polePosition(Stats arrIn[4],int arrOut[4],int intIn);
+    
 };
-Game::Game(WINDOW *BOARD)
+Game::Game(WINDOW *BOARD, WINDOW *MENU, WINDOW * STATS)
 {
     _board = Board(BOARD);
     _BOARD = BOARD;
+    _MENU = MENU;
+    _STATS = STATS;
     _numPlayers = 0;
     _players[4];
 }
@@ -54,65 +63,75 @@ void Game::displayBoard()
     refresh();
     wrefresh(_BOARD);
 }
-bool Game::checkSort(Stats arrIn[4])
-{
-    for (int i = 0; i < _numPlayers - 1; i++)
-    {
-        if (arrIn[i].points >= arrIn[i + 1].points)
-        {
-            return false;
+
+int Game::polePosition(Stats arrIn[4],int arrOut[4],int intIn){
+    int pos = 5;
+    for(int i = 0; i < _numPlayers; i++){
+        if(arrIn[i].points <= intIn){
+            pos -= 1;
         }
     }
-    return true;
-}
-void Game::shotgunSort(Stats arrIn[4])
-{
-    // shotgun shot
-    int sortInd = rand() % _numPlayers;
-    Stats temp;
-    if (arrIn[0 + sortInd].points >= arrIn[1 + sortInd].points)
-    {
-        temp = arrIn[1 + sortInd];
-        arrIn[1 + sortInd] = arrIn[0 + sortInd];
-        arrIn[0 + sortInd] = temp;
+    for(int j = 0; j < 4; j ++){
+        if(pos == arrOut[j]){
+            pos ++;
+        }
     }
+    return pos;
 }
-void Game::displayStats(WINDOW *statsWin)
+void Game::generatePositionArray(Stats players[4],int oldPositionArray[4]){
+    int positionArray[4] = {-1,-1,-1,-1};
+    for(int i = 0; i < _numPlayers; i++){
+        positionArray[i] = polePosition(players,positionArray,players[i].points);
+    }
+    for(int i = 0; i < 4; i++){
+        oldPositionArray[i] = positionArray[i] - 1;
+    }
+
+}
+void Game::displayStats()
 {
-    mvwaddstr(statsWin, 0, 1, "Leaderboard");
+    box(_STATS, 0,0);
+    mvwaddstr(_STATS, 0, 1, "Leaderboard");
+    mvwaddstr(_STATS, 1,2, "strength|stamina|provis|bugs");
     Stats gameStat[4];
     for (int i = 0; i < _numPlayers; i++)
     {
         gameStat[i] = _players[i].printStats();
     }
-    do
-    {
-        shotgunSort(gameStat);
-    } while (!checkSort(gameStat));
-
+    int positions[4];
+    generatePositionArray(gameStat,positions);
+    int offset = 0;
     for(int i = 0; i < _numPlayers; i++){
-        if(i == _turn){wattron(statsWin,A_STANDOUT);}
-        const char* cName = gameStat[i].name.c_str();
-        mvwaddstr(statsWin, 1 + i*3, 1, cName);
-        const char* cStat = gameStat[i].display.c_str();
-        mvwaddstr(statsWin, 2 + i*3, 2, cStat);
-        if(i == _turn){wattroff(statsWin,A_STANDOUT);}
+        if(gameStat[i].name != ""){        
+            // stringstream cNamePoints;
+            // cNamePoints << gameStat[i].name << " | " << to_string(gameStat[i].points);
+            // string flatName;
+            // cNamePoints >> flatName;
+            if(i == _turn){wattron(_STATS,A_STANDOUT);}
+            // const char* cName = flatName.c_str();
+            const char* cName = gameStat[i].name.c_str();
+            mvwaddstr(_STATS, 2 + positions[i]*3, 1, cName);
+            const char* cStat = gameStat[i].display.c_str();
+            mvwaddstr(_STATS, 3 + positions[i]*3, 2, cStat);
+            if(i == _turn){wattroff(_STATS,A_STANDOUT);}
+            offset ++;
+        }
     }
-    wrefresh(statsWin);
+    wrefresh(_STATS);
 }
-void Game::playerSelect(WINDOW *menuWin, WINDOW *statsWin)
+void Game::playerSelect()
 {
 
-    Menu startMenu(menuWin, "Entomology Trek",
+    Menu startMenu(_MENU, "Entomology Trek",
                    {"Welcome to a glorious", "safari adventure where ", "you will, uh, collect bugs.", "Please select # of players", "  Arrows to move,", "  Enter to select"}, {"1", "2", "3", "4"}, {});
 
     startMenu.displayMenu();
     _numPlayers = startMenu.getChoice(7, 2) + 1;
 
-    Menu characterMenu(menuWin, "Character Selection", {"Select your Character", "strength|stamina|provis|bugs"});
+    Menu characterMenu(_MENU, "Character Selection", {"Select your Character", "strength|stamina|provis|bugs"});
     characterMenu.getFromFile("characters.txt");
     string nameTitle = "Player 1";
-    Menu playerMenu(menuWin, nameTitle, {"Enter your name: "});
+    Menu playerMenu(_MENU, nameTitle, {"Enter your name: "});
 
     for (int i = 0; i < _numPlayers; i++)
     {
@@ -123,7 +142,7 @@ void Game::playerSelect(WINDOW *menuWin, WINDOW *statsWin)
         characterMenu.displayMenu();
 
         _players[i] = characterMenu.processCharacterSelection(characterMenu.getChoice(4, 2), pName, i + '1');
-        displayStats(statsWin);
+        displayStats();
     }
     _board.setPlayerCount(_numPlayers);
 }
@@ -139,11 +158,11 @@ int main(int argc, char **argv)
     WINDOW *menuWin = newwin(15, 30, LINES / 2 - 10, COLS / 2 - 5);
     WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
     WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
-    Game gameState(boardWin);
+    Game gameState(boardWin,menuWin,statsWin);
     refresh();
-    gameState.playerSelect(menuWin,statsWin);
+    gameState.playerSelect();
     gameState.displayBoard();
-    gameState.displayStats(statsWin);
+    gameState.displayStats();
 
     // pause the screen output
     getch();

@@ -26,19 +26,38 @@ void sorting(int arrIn[4], int len){
     cout << sortInd << ":" ;
     }
 }
-
-int main(){
-    int myArr[4] = { 1231251,5321,1234,0 };
-    do{
-        sorting(myArr);
-        for(int i = 0; i<4;i++){
-            cout <<myArr[i] <<' ';
+int polePosition(int arrIn[4],int arrOut[4],int intIn){
+    int pos = 5;
+    for(int i = 0; i < 4; i++){
+        if(arrIn[i] <= intIn){
+            pos -= 1;
         }
-        cout <<endl;
-    }while(!checkSort(myArr,4));
+    }
+    for(int j = 0; j < 4; j ++){
+        cout << arrOut[j] << '|' << pos <<endl;
+        if(pos == arrOut[j]){
+            pos ++;
+        }
+    }
+    return pos;
+}
+void sortArr(int arrIn[4], int arrOut[4]){
+    
+}
+int main(){
+    int myArr[4] = { 1,5,2,1 };
+    int newArr[4];
+    for(int i = 0; i < 4; i++){
+        newArr[i] = polePosition(myArr,newArr,myArr[i]);
+    }
     cout << "Sorted!" << endl;
     for(int i = 0; i<4;i++){
             cout <<myArr[i] <<' ';
+        }
+    cout <<endl;
+    
+    for(int i = 0; i<4;i++){
+            cout <<newArr[i] <<' ';
         }
     cout <<endl;
 
