@@ -46,7 +46,8 @@ public:
         _provisions = 100;
         _bugs_points = 0;
         _age = 1;
-        _idx = 0;
+        _idx = -1;
+        _board = 0;
         _meeple = '@';
     }
     // Creates a new instance of Player with _name, _strength, _stamina and _provisions coming from the parameters. If the parameters are outside of the accepted range of values, use the minimum accepted value instead. _bugs_points should default to 0, and _age should default to 1.
@@ -58,7 +59,8 @@ public:
         _provisions = ((provisions <= 1000) && (provisions >= 100)) ? provisions : 100;
         _bugs_points = bugs;
         _age = age;
-        _idx = 0;
+        _idx = -1;
+        _board = 0;
         _meeple = rep;
     }
 
@@ -142,7 +144,7 @@ public:
         pStat.name = _name;
         pStat.points = _bugs_points; 
         stringstream statsOut; 
-        statsOut <<"|"<<_age<<"|"<<_strength<<"|"<<_stamina<<"|"<<_provisions;
+        statsOut <<"|"<<_age<<"|"<<_strength<<"|"<<_stamina<<"|"<<_provisions<<"|"<<_bugs_points;
 
         statsOut >> pStat.display;
         return pStat;

@@ -1,5 +1,4 @@
 playerName|age|strength|stamina|provisions|bugs
-ab|cd|ef|gh|1|23
 Apollo|as|5|500|500|1000|20000
 Mane|bs|8|900|600|600|20000
 Elsa|cs|12|900|700|500|20000

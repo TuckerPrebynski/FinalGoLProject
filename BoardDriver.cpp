@@ -275,7 +275,9 @@ void Board::drawPlayers(Player players[])
             }
             btmRoute.push_back(playerPos[1]);
         }
-        mvwaddch(board, ((2 + playerPos[0] * 2) + offset[0]), (3 + playerPos[1] + offset[1]), players[i].getMeeple());
+        if(playerPos[1] != -1){
+            mvwaddch(board, ((2 + playerPos[0] * 2) + offset[0]), (3 + playerPos[1] + offset[1]), players[i].getMeeple());
+        }
     }
 }
 void Board::displayBoard(Player players[])
@@ -291,4 +293,7 @@ void Board::displayBoard(Player players[])
         drawTiles(i);
     }
     drawPlayers(players);
+}
+char Board::getTileType(int track, int idx){
+    return _tiles[track][idx].type;
 }

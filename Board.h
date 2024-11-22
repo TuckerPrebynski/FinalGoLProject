@@ -41,9 +41,6 @@ private:
     /// @brief Draw tiles to board window object
     /// @param track which track to draw
     void drawTiles(int track);
-    void checkCollisions(int top[], int offset[], int pos)
-    {
-    }
     /// @brief Draw players over drawn board
     /// @param players array of player objects
     void drawPlayers(Player players[]);
@@ -55,6 +52,14 @@ public:
     void initializeBoard();
     /// @brief Display Board to board window
     void displayBoard(Player players[]);
+    /// @brief Basic setter
+    /// @param player_count new value for number of players 
     void setPlayerCount(int player_count);
+    /// @brief return the tile type character
+    /// @param track which track the tile is on
+    /// @param idx the index of the tile
+    /// @return what kind of tile it is from char list
+    char getTileType(int track, int idx);
+
 };
 #endif

@@ -45,7 +45,7 @@ void sortArr(int arrIn[4], int arrOut[4]){
     
 }
 int main(){
-    int myArr[4] = { 1,5,2,1 };
+    int myArr[4] = { 1,5,0,0 };
     int newArr[4];
     for(int i = 0; i < 4; i++){
         newArr[i] = polePosition(myArr,newArr,myArr[i]);
