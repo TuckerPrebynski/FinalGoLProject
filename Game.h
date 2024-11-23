@@ -21,7 +21,9 @@ public:
     WINDOW *_BOARD;
     WINDOW *_MENU;
     WINDOW * _STATS;
-    Game(WINDOW *BOARD, WINDOW *MENU, WINDOW * STATS);
+    WINDOW *_ROLL;
+    int _turnNum;
+    Game(WINDOW *BOARD, WINDOW *MENU, WINDOW * STATS,WINDOW* ROLL);
     /// @brief disply the board state
     void displayBoard();
     /// @brief run the start/player select routine
@@ -31,6 +33,9 @@ public:
     /// @brief run through a single player's turn, given which player to run
     /// @param pNum which player to run (0-3)
     void turn(int pNum);
+    void displayRoll();
+    int rollDie();
+    void saveStateToFile();
 private:
     /// @brief populate given array of numbers 1-4 indicating the ordered positions of each player object;
     /// @param players array of Stats objects to rank

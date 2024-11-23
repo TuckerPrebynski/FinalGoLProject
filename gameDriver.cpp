@@ -10,15 +10,18 @@
 #endif
 #include <random>
 #include <vector>
+#include <fstream>
 using namespace std;
-Game::Game(WINDOW *BOARD, WINDOW *MENU, WINDOW * STATS)
+Game::Game(WINDOW *BOARD, WINDOW *MENU, WINDOW * STATS, WINDOW *ROLL)
 {
     _board = Board(BOARD);
     _BOARD = BOARD;
     _MENU = MENU;
     _STATS = STATS;
+    _ROLL = ROLL;
     _numPlayers = 0;
     _players[4];
+    _turnNum = 0;
 }
 void Game::displayBoard()
 {
@@ -110,6 +113,63 @@ void Game::playerSelect()
         displayStats();
     }
     _board.setPlayerCount(_numPlayers);
+}
+void Game::displayRoll(){
+    int idx = 1;
+    wmove(_ROLL,1,1);
+    mvwaddstr(_ROLL,idx+ 0, 1," ________\n");
+    mvwaddstr(_ROLL,idx+ 1, 1,"|\\       \\\n");
+    mvwaddstr(_ROLL,idx+ 2, 1,"| \\       \\\n");
+    mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+    mvwaddstr(_ROLL,idx+ 4, 1,"\\  |       |\n");
+    mvwaddstr(_ROLL,idx+ 5, 1," \\ |       |\n");
+    mvwaddstr(_ROLL,idx+ 6, 1,"  \\|_______|\n");
+    box(_ROLL,0,0);
+    wrefresh(_ROLL);
+}
+int Game::rollDie(){
+    int roll = rand() % 6 + 1;
+    int idx = 1;
+    switch(roll){
+        case 6:
+            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o  o \\\n");
+            mvwaddstr(_ROLL,idx+ 2, 1,"| \\  o  o \\\n");
+            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\__o__o_\\\n");
+        break;
+        case 5:
+            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o  o \\\n");
+            mvwaddstr(_ROLL,idx+ 2, 1,"| \\   o   \\\n");
+            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\__o__o_\\\n");
+        break;
+        case 4:
+            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o  o \\\n");
+            mvwaddstr(_ROLL,idx+ 2, 1,"| \\  o  o \\\n");
+            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+        break;
+        case 3:
+            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o    \\\n");
+            mvwaddstr(_ROLL,idx+ 2, 1,"| \\   o   \\\n");
+            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_____o_\\\n");
+        break;
+        case 2:
+            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o    \\\n");
+            mvwaddstr(_ROLL,idx+ 2, 1,"| \\     o \\\n");
+            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+        break;
+        case 1:
+            mvwaddstr(_ROLL,idx+ 1, 1,"|\\       \\\n");
+            mvwaddstr(_ROLL,idx+ 2, 1,"| \\   o   \\\n");
+            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+        break;
+    }
+    wrefresh(_ROLL);
+    return roll;
+}
+void Game::saveStateToFile(){
+    ofstream out_file("gameState.txt");
+    out_file << _turnNum << endl;
+
+
 }
 void Game::turn(int pNum){
 

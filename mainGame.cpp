@@ -21,7 +21,7 @@ using namespace std;
 //   change player
 
 // Compile command
-//  g++ mainGame.cpp BoardDriver.cpp MenuDriver.cpp -lncurses -DNCURSES_STATIC
+//  g++ mainGame.cpp BoardDriver.cpp interfaceDriver.cpp gameDriver.cpp -lncurses -DNCURSES_STATIC
 
 
 
@@ -37,11 +37,27 @@ int main(int argc, char **argv)
     WINDOW *menuWin = newwin(15, 30, LINES / 2 - 10, COLS / 2 - 5);
     WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
     WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
-    Game gameState(boardWin,menuWin,statsWin);
+    WINDOW *rollWin = newwin(10, 15, LINES - 26, COLS - 30);
+    Game gameState(boardWin,menuWin,statsWin,rollWin);
     refresh();
+    
+    //if no saved game state
     gameState.playerSelect();
+    //else read from file
     gameState.displayBoard();
     gameState.displayStats();
+    gameState.displayRoll();
+    //while game.checkwincon != true
+    //run turn for every player
+        //get roll
+        //update positions
+        //check tile
+        //run tile event
+        //update position/stats
+        //repeat
+    
+
+
 
     // pause the screen output
     getch();
