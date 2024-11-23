@@ -1,0 +1,11 @@
+(1-short ans, 2-4-muliple choice)|Question|ans
+1|What can sting like a bee, but float like a butterfly?|Mike Tyson
+2|This statement is True|True|False
+1|Who won the 1963 World Series|Dodgers
+4|How many fingers am I holding up|3|2|1|4
+2|You think I should see a doctor about this lump|Yeah, probably|Nah, looks fine to me
+4|Billy Pilgrim met what species in slaughterhouse five|Tralfmadorians|Vortigaunts|Rupereans|The Flea
+1|What kafka character turns into a roach|Gregor Samsa
+3|In the Gift of the Magi, what are the gifts|Watch chain and Combs|Brush and Wristwatch|Myrrh and Frankincense
+4|What was the Arnold Palmer named after|Golfer|Surgeon|Bartender|Cartoon
+

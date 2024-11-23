@@ -24,6 +24,7 @@ private:
     static const int _BOARD_SIZE = 52;
     Tile _tiles[2][_BOARD_SIZE];
     WINDOW *board;
+    
     int _player_count;
     /// @brief populate and return tile object based on given type
     /// @param tile tile object to be modified

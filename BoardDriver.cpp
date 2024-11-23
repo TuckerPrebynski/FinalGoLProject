@@ -276,7 +276,7 @@ void Board::drawPlayers(Player players[])
             btmRoute.push_back(playerPos[1]);
         }
         if(playerPos[1] != -1){
-            mvwaddch(board, ((2 + playerPos[0] * 2) + offset[0]), (3 + playerPos[1] + offset[1]), players[i].getMeeple());
+            mvwaddch(board, ((2 + playerPos[0] * 2) + offset[0]), (4 + playerPos[1]*3 + offset[1]), players[i].getMeeple());
         }
     }
 }

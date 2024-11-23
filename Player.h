@@ -2,6 +2,7 @@
 #define PLAYER_H
 #include <iostream>
 #include <sstream>
+#include <vector>
 using namespace std;
 struct Stats{
     string name;
@@ -13,6 +14,7 @@ class Player
 private:
     string _name;
     string _playerName;
+    vector <string> _companion;
     int _strength, _stamina, _provisions, _bugs_points, _age;
     int _board;
     int _idx, _lastIdx;
@@ -49,6 +51,7 @@ public:
         _idx = -1;
         _board = 0;
         _meeple = '@';
+        _companion = {"None","",""};
     }
     // Creates a new instance of Player with _name, _strength, _stamina and _provisions coming from the parameters. If the parameters are outside of the accepted range of values, use the minimum accepted value instead. _bugs_points should default to 0, and _age should default to 1.
     Player(string name, int age, int strength, int stamina, int provisions, int bugs, char rep)
@@ -62,6 +65,7 @@ public:
         _idx = -1;
         _board = 0;
         _meeple = rep;
+        _companion = {"None","",""};
     }
 
     // Getters
@@ -77,6 +81,8 @@ public:
     int getBugsPoints() { return _bugs_points; }
     // return the _age data member.
     int getAge() { return _age; }
+
+    vector <string> getCompanion(){return _companion;}
     // return board position
     void getPos(int position[2]){
         position[0] = _board;
@@ -88,7 +94,13 @@ public:
     // Adders
     // update the stored name for your Player
     void setName(string name) { _name = name; }
-
+    void setCompanion(vector <string> companion){_companion = companion;}
+    void changePos(int change){
+        _idx += change;
+        if(_idx < 0){
+            _idx = 0;
+        }
+    }
     // update the stored strength
     void addStrength(int strength)
     {
@@ -126,23 +138,29 @@ public:
         addStrength(strength);
         addStamina(stamina);
         addProvisions(provisions);
-        addBugsPoints(-5000);
+        addBugsPoints(-500);
         _board = 1;
+        _idx = 0;
     }
     // This function can be called when a player chooses to go straight to the pride lands at the start of the game and skip training. This should give the player an immediate boost of +5,000 Pride Points, but come at the cost of reduced Strength (-2,000), Provisions (-2,000), and Stamina (-1,000).
     void chargeForth()
     {
-        addStrength(-2000);
-        addStamina(-1000);
-        addProvisions(-2000);
-        addBugsPoints(5000);
+        addStrength(-200);
+        addStamina(-100);
+        addProvisions(-200);
+        addBugsPoints(500);
         _board = 0;
+        _idx = 0;
     }
     // This function should print all of the data members in an organized stats message.
     Stats printStats(){
         Stats pStat;
         pStat.name = _name;
+        if(_name == ""){
+            pStat.points = -1;
+        }else{
         pStat.points = _bugs_points; 
+        }
         stringstream statsOut; 
         statsOut <<"|"<<_age<<"|"<<_strength<<"|"<<_stamina<<"|"<<_provisions<<"|"<<_bugs_points;
 

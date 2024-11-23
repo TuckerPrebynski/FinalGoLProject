@@ -84,9 +84,9 @@ int Menu::selectChoice(int x, int y){
     int ch;
     ch = wgetch(MENU);
     if(ch == KEY_DOWN){
-        idx = (idx + 1)%4;
+        idx = (idx + 1)%_choices.size();
     }else if(ch == KEY_UP){
-        idx = (idx + 3)%4;
+        idx = (idx + (_choices.size() - 1))%_choices.size();
     } else if(ch == '\n'){
         return idx;
     } 
@@ -129,6 +129,8 @@ int Menu::getChoice(int x, int y){
     do{
         choice = selectChoice(x,y);
     }while(choice == -1);
+    wclear(MENU);
+    wrefresh(MENU);
     return choice;
 }
 string Menu::enterText(int x, int y){
@@ -176,4 +178,7 @@ Player Menu::processCharacterSelection(int choice, string name,char piece){
     _choiceText.erase(_choiceText.begin() + choice);
     _choiceText2.erase(_choiceText2.begin() + choice);
     return newPlayer;
+}
+vector <string> Menu::returnChoice(int choice){
+    return {_choices[choice],_choiceText[choice],_choiceText2[choice]};
 }

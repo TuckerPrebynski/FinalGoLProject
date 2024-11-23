@@ -60,6 +60,7 @@ class Menu{
         string enterText(int x, int y);
         /// @brief draws the menu box, title, and text to window. Does not refresh
         void displayMenu();
+        vector <string> returnChoice(int choice);
         void changeName(string name);
         void changeChoices(vector <string> choices, vector <string> choiceText, vector <string> choiceText2);
         void getFromFile(string fileName);

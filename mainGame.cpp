@@ -35,10 +35,13 @@ int main(int argc, char **argv)
 
     refresh();
     WINDOW *menuWin = newwin(15, 30, LINES / 2 - 10, COLS / 2 - 5);
+    WINDOW *menuLongWin = newwin(25, 30, LINES / 2 - 10, COLS / 2 - 5);
+
     WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
     WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
-    WINDOW *rollWin = newwin(10, 15, LINES - 26, COLS - 30);
-    Game gameState(boardWin,menuWin,statsWin,rollWin);
+    WINDOW *companionWin = newwin(5, 30, LINES - 11, 32);
+    WINDOW *rollWin = newwin(10, 15, LINES - 26, 200 - 15);
+    Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin);
     refresh();
     
     //if no saved game state
@@ -46,7 +49,7 @@ int main(int argc, char **argv)
     //else read from file
     gameState.displayBoard();
     gameState.displayStats();
-    gameState.displayRoll();
+    gameState.firstTurn();
     //while game.checkwincon != true
     //run turn for every player
         //get roll
@@ -55,7 +58,10 @@ int main(int argc, char **argv)
         //run tile event
         //update position/stats
         //repeat
-    
+    while(gameState.runTurn()){
+        gameState.displayBoard();
+        gameState.displayStats();
+    }
 
 
 
