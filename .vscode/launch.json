@@ -3,6 +3,34 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [],
-    "launch": "C:\\Program Files (x86)\\vsCode\\FinalGoLProject"
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/tuckprebynski/vscode/CSCI1300Final/FinalGoLProject/a.out",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "/home/tuckprebynski/vscode/CSCI1300Final/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+
+
+
+    ],
+    //"launch": "C:/home/tuckprebynski/vscode/CSCI1300Final/FinalGoLProject/a.out"
 }
