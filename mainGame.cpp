@@ -39,8 +39,8 @@ int main(int argc, char **argv)
 
     WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
     WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
-    WINDOW *companionWin = newwin(5, 30, LINES - 11, 32);
-    WINDOW *rollWin = newwin(10, 15, LINES - 26, 200 - 15);
+    WINDOW *companionWin = newwin(5, 30, LINES - 16, 32);
+    WINDOW *rollWin = newwin(10, 15, LINES - 26, 31);
     Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin);
     refresh();
     
@@ -62,6 +62,7 @@ int main(int argc, char **argv)
         gameState.displayBoard();
         gameState.displayStats();
     }
+    
 
 
 

@@ -5,60 +5,57 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
-bool checkSort(int arrIn[4],int len){
-    for(int i = 0; i < len-1;i++){
-        if(arrIn[i] >= arrIn[i+1]){
-            return false;
-        }
-    }
-    return true;
-}
-void sorting(int arrIn[4], int len){
-    //shotgun shot
-    if(len > 1){
-    int sortInd = rand()%len;
-    int temp;
-    if(arrIn[0+sortInd] >= arrIn[1+sortInd]){
-        temp = arrIn[1+sortInd];
-        arrIn[1+sortInd] = arrIn[0+sortInd];
-        arrIn[0+sortInd] = temp;
-    }
-    cout << sortInd << ":" ;
-    }
-}
-int polePosition(int arrIn[4],int arrOut[4],int intIn){
-    int pos = 5;
-    for(int i = 0; i < 4; i++){
-        if(arrIn[i] <= intIn){
-            pos -= 1;
-        }
-    }
-    for(int j = 0; j < 4; j ++){
-        cout << arrOut[j] << '|' << pos <<endl;
-        if(pos == arrOut[j]){
-            pos ++;
-        }
-    }
-    return pos;
-}
-void sortArr(int arrIn[4], int arrOut[4]){
+
+vector <string> splitString(vector <string> toSplit,int maxLen){
+    string modString = toSplit.back();
+    int strlen = modString.length();
+    string temp;
     
+    if(strlen > maxLen ){
+        toSplit.pop_back();
+        stringstream strin(modString);
+        stringstream strout("");
+        string temp2;
+        string temp3;
+        while(true){
+            if (strout.str().size() > maxLen){
+                
+                getline(strin,temp3);
+                temp += " ";
+                temp += temp3;
+                break;
+            }
+            if(!getline(strin,temp,' ')){
+                if(!getline(strin,temp)){
+                    break;
+                }
+            }
+            temp2 = strout.str();
+            strout << temp << ' ' ;
+            
+        }
+        if(temp2 == ""){
+            temp2 = temp.substr(0,maxLen);
+            temp = temp.substr(maxLen);
+        }
+        toSplit.push_back(temp2);
+        toSplit.push_back(temp);
+
+        return splitString(toSplit,maxLen);
+    }
+    return toSplit;
 }
 int main(){
-    int myArr[4] = { 1,5,0,0 };
-    int newArr[4];
-    for(int i = 0; i < 4; i++){
-        newArr[i] = polePosition(myArr,newArr,myArr[i]);
+    vector <string> text = {"THIS IS A LONG STRING","THIS IS ANOTHEREERERERERER LONG STRING","YOULL NEVER GUESS WHAT THIS IS"};
+    vector <string> textOut;
+    vector <string> textTemp;
+    for(int i = 0; i < text.size();i++){
+        textTemp = splitString({text.at(i)},12);
+        for(int ii = 0; ii < textTemp.size();ii++){
+            textOut.push_back(textTemp.at(ii));
+        }
     }
-    cout << "Sorted!" << endl;
-    for(int i = 0; i<4;i++){
-            cout <<myArr[i] <<' ';
-        }
-    cout <<endl;
-    
-    for(int i = 0; i<4;i++){
-            cout <<newArr[i] <<' ';
-        }
-    cout <<endl;
-
+    for(int i = 0; i < textOut.size();i++){
+        cout << textOut.at(i) << endl;
+    }
 }

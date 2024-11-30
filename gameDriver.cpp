@@ -12,6 +12,7 @@
 #include <vector>
 #include <fstream>
 using namespace std;
+ofstream debug("debug.txt");
 Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW *ROLL, WINDOW *COMPANION)
 {
     _board = Board(BOARD);
@@ -24,10 +25,10 @@ Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW 
     _numPlayers = 0;
     _players[4];
     _turnNum = 0;
+    initTiles();
 }
 void Game::displayBoard()
 {
-    _board.initializeBoard();
     _board.displayBoard(_players);
     refresh();
     wrefresh(_BOARD);
@@ -116,8 +117,9 @@ void Game::playerSelect()
         playerMenu.displayMenu();
         string pName = playerMenu.enterText(3, 2);
         characterMenu.displayMenu();
-
-        _players[i] = characterMenu.processCharacterSelection(characterMenu.getChoice(4, 2), pName, i + '1');
+        int pChoice = characterMenu.getChoice(4, 2);
+        
+        _players[i] = characterMenu.processCharacterSelection(pChoice, pName, i + '1');
         displayStats();
     }
     _board.setPlayerCount(_numPlayers);
@@ -170,6 +172,7 @@ int Game::rollDie(){
             mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
         break;
     }
+    box(_ROLL,0,0);
     wrefresh(_ROLL);
     return roll;
 }
@@ -243,11 +246,15 @@ bool Game::riddleTile(string name,vector <string> text){
         int answer = 0;
         for(int i = 0; i < type; i ++){
             int idx = rand() % type;
-            if(i == 0){
-                answer = idx;
+            if(riddleResponses[idx] == ""){
+                if(i == 0){
+                    answer = idx;
+                }
+                getline(riddleStream,temp,'|');
+                riddleResponses[idx] = temp;
+            }else{
+                i--;
             }
-            getline(riddleStream,temp,'|');
-            riddleResponses[idx] = temp;
         }
         Menu tileDisplay(_MENU,name,text,riddleResponses,{});
         tileDisplay.displayMenu();
@@ -258,18 +265,136 @@ bool Game::riddleTile(string name,vector <string> text){
         }
     }
 }   
+void Game::eventTile(string name,int player){
+    debug << "In event" << endl;
+    string temp;
+    int pPos[2] = {0,0};
+    int pathType = -1;
+    _players[player].getPos(pPos);
+    debug << "loaded pos" << endl;
+    stringstream eventString;
+    string eventText;
+    string eventPass;
+    string eventFail;
+    debug << _events.size() <<endl;
+    int eventNum = rand() % (_events.size());
+    do{
+        eventNum = rand() % (_events.size());
+        debug << "eventNum: " <<eventNum << endl;
+        string event = _events.at(eventNum);
+        debug << "event: " << event <<endl;
+        eventString.str(event);
+        getline(eventString,eventText,'|');
+        getline(eventString,eventPass,'|');
+        getline(eventString,eventFail,'|');
+        getline(eventString,temp,'|'); 
+        pathType = stoi(temp);
+    }while((pathType != pPos[0])&&(pathType != 2));
+    getline(eventString,temp,'|');
+    int eventCondType = stoi(temp);
+    getline(eventString,temp,'|');
+    int eventCond = stoi(temp);
+    getline(eventString,temp);
+    int eventPoints = stoi(temp);
+    debug << "Loaded event" << endl;
+    //_events.erase(_events.begin() + eventNum+1);
+    
+    
+    bool condPass = testCond(eventCondType,eventCond,player);
+    if(eventPoints < 0){
+        if(!condPass){
+            _players[player].addBugsPoints(eventPoints);
+        }
+    }else{
+        if(condPass){
+            _players[player].addBugsPoints(eventPoints);
+        }
+    }
+    temp = (condPass) ? eventPass : eventFail;
+    Menu tileDisplay(_MENU,name,{eventText,temp});
+    
+    tileDisplay.displayMenu();
+    tileDisplay.enterText(9,2);
+
+
+}
+void Game::initCompanionList(string filename){
+    ifstream in_file(filename);
+    string temp;
+    string temp2;
+    getline(in_file,temp);
+    stringstream line;
+    while(getline(in_file,temp)){
+        line.str(temp);
+        getline(line,temp2,'|');
+        _companions.push_back(temp2);
+    }
+
+}
+bool Game::testCond(int condType, int cond, int pNum){
+    Player player = _players[pNum];
+    switch(condType){
+        //(0 = Companion; 1 = Age; 2 = Strength; 3 = Stamina; 4 = Provisions)
+        case 0:
+            //companion
+            if (player.getCompanion().at(0) == _companions.at(cond-1)){
+                return true;
+            }
+            break;
+        case 1:
+            //age
+            if(player.getAge() >= cond){
+                return true;
+            }
+            break;
+        case 2:
+            //strength
+            if(player.getStrength() >= cond){
+                return true;
+            }
+            break;
+        case 3:
+            //stamina
+            if(player.getStamina() >= cond){
+                return true;
+            }            
+            break;
+        case 4:
+            //provisions
+            if(player.getProvisions() >= cond){
+                return true;
+            }
+            break;
+    }
+    //did not pass condition
+    return false;
+}
 void Game::initTiles(){
+    _board.initializeBoard();
     ifstream in_file("riddles.txt");
+    if(!in_file.is_open()){
+        throw;
+        }
     string temp;
     getline(in_file,temp);
     while(getline(in_file,temp)){
         _riddles.push_back(temp);
     }
+
+    ifstream in_file2("events.txt");
+    if(!in_file2.is_open()){
+        throw;
+        }
+    getline(in_file2,temp);
+    while(getline(in_file2,temp)){
+        _events.push_back(temp);
+    }
+    initCompanionList("companions.txt");
 }
 void Game::findTraveler(string name, vector <string> text, int pNum){
     Menu tileDisplay(_MENU,name,text,{"Yes","No"},{});
             tileDisplay.displayMenu();
-            if(tileDisplay.getChoice(9,2) == 1){
+            if(tileDisplay.getChoice(9,2) == 0){
             _players[pNum].addProvisions(300);
             _players[pNum].addStamina(300);
             _players[pNum].addStrength(300);
@@ -314,6 +439,8 @@ void Game::executeTile(char tile,int pNum, int roll){
         case 'C':
             name = "Riddle";
             text = {"A strange man asks you:"};
+            //basicTileDisplay(name,text);
+
             if(riddleTile(name,text)){
                 //got riddle right
                 _players[pNum].addProvisions(500);
@@ -325,8 +452,14 @@ void Game::executeTile(char tile,int pNum, int roll){
         break;
         case 'G':
             name = "Grasslands";
-            text = {"Nothing Happens"};
-            basicTileDisplay(name,text);
+            //DEBUG change 3 back to 0
+            if((rand() % 2) == 3){
+                text = {"Nothing Happens"};
+                basicTileDisplay(name,text);
+            }else{
+                debug << "calling event new" << endl;
+                eventTile(name,pNum);
+            }
         break;
     }
 

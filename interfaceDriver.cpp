@@ -17,23 +17,78 @@ Menu::Menu(WINDOW *winIn, string name, vector <string> text, vector <string> cho
     MENU = winIn;
     _name = name;
     _text = text;
+    fixText();
     _choices = choices;
     _choiceText = choiceText;
-    idx = -1;
+    idx = 0;
 }
 Menu::Menu(WINDOW *winIn, string name, vector <string> text, vector <string> choices, vector <string> choiceText, vector <string> choiceText2){
     MENU = winIn;
     _name = name;
     _text = text;
+    fixText();
     _choices = choices;
     _choiceText = choiceText;
     _choiceText2 = choiceText2;
-    idx = -1;
+    idx = 0;
 }
 Menu::Menu(WINDOW *winIn, string name, vector <string> text){
     MENU = winIn;
     _name = name;
     _text = text;
+    fixText();
+}
+vector <string> Menu::splitString(vector <string> toSplit,int maxLen){
+    string modString = toSplit.back();
+    int strlen = modString.length();
+    string temp;
+    
+    if(strlen > maxLen ){
+        toSplit.pop_back();
+        stringstream strin(modString);
+        stringstream strout("");
+        string temp2;
+        string temp3;
+        while(true){
+            if (strout.str().size() > maxLen){
+                
+                getline(strin,temp3);
+                temp += " ";
+                temp += temp3;
+                break;
+            }
+            if(!getline(strin,temp,' ')){
+                if(!getline(strin,temp)){
+                    break;
+                }
+            }
+            temp2 = strout.str();
+            strout << temp << ' ' ;
+            
+        }
+        if(temp2 == ""){
+            temp2 = temp.substr(0,maxLen);
+            temp = temp.substr(maxLen);
+        }
+        toSplit.push_back(temp2);
+        toSplit.push_back(temp);
+
+        return splitString(toSplit,maxLen);
+    }
+    return toSplit;
+}
+void Menu::fixText(){
+    vector <string> newText;
+    vector <string> newTextTemp;
+    string temp;
+    int maxlen = getmaxx(MENU)-4;
+    for(int i = 0; i < _text.size();i++){
+        newTextTemp = splitString({_text.at(i)},maxlen);
+        for(int ii = 0; ii < newTextTemp.size();ii++){
+            newText.push_back(newTextTemp.at(ii));
+        }
+    }
+    _text = newText;
 }
 void Menu::displayMenu(){
     wclear(MENU);
@@ -125,7 +180,8 @@ void Menu::getFromFile(string fileName){
     _choiceText2 = choiceText2;
 }
 int Menu::getChoice(int x, int y){
-    int choice;
+    idx = 0;
+    int choice = -1;
     do{
         choice = selectChoice(x,y);
     }while(choice == -1);

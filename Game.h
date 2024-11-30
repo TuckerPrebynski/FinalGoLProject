@@ -26,6 +26,8 @@ public:
     WINDOW *_COMPANION;
     int _turnNum;
     vector <string> _riddles;
+    vector <string> _events;
+    vector <string> _companions;
     Game(WINDOW *BOARD, WINDOW *MENU, WINDOW *LONGMENU, WINDOW * STATS,WINDOW* ROLL, WINDOW* COMPANION);
     /// @brief disply the board state
     void displayBoard();
@@ -36,11 +38,18 @@ public:
     /// @brief run through a single player's turn, given which player to run
     /// @param pNum which player to run (0-3)
     void turn(int pNum);
+    /// @brief display the die window onscreen
     void displayRoll();
+    /// @brief roll the die
+    /// @return number 1-6 indicating the player's roll
     int rollDie();
+    /// @brief saves gamestate to file
     void saveStateToFile();
+    /// @brief runs the initial path selection and first turn sequence for the given player, used only at start of game
+    /// @param player player num
     void pickPath(int player);
     void firstTurn();
+    void eventTile(string name, int player);
     bool runTurn();
     void displayCompanion(int pNum);
     vector <string> getCompanion();
@@ -55,6 +64,7 @@ private:
     void basicTileDisplay(string name, vector <string> text);
     bool riddleTile(string name,vector <string> text);
     void findTraveler(string name, vector <string> text, int pNum);
-    
+    bool testCond(int condType, int cond, int pNum);
+    void initCompanionList(string filename);
 };
 #endif

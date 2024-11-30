@@ -100,6 +100,9 @@ public:
         if(_idx < 0){
             _idx = 0;
         }
+        if(_idx > 52){
+            _idx = 52;
+        }
     }
     // update the stored strength
     void addStrength(int strength)

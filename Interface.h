@@ -37,6 +37,8 @@ class Menu{
         /// @param y 
         /// @return choice or -1 if invalid
         int selectChoice(int x, int y);
+        void fixText();
+        vector <string> splitString(vector <string> toSplit,int maxLen);
     public:
         /// @brief Standard constructor
         /// @param winIn the WINDOW object to print to
