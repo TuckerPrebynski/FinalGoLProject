@@ -66,7 +66,7 @@ vector<BoidRef> Chunk::checkBoids(double x, double y, vector<BoidRef> nearbyBoid
 {
     cout << "checking self" << endl;
 
-    if(not(_boids.empty())){    
+    if(_haveBoids){    
         cout  << _boids.size()<<endl;
         for(int i = 0; i < _boids.size(); i++){
         cout << i << endl;
