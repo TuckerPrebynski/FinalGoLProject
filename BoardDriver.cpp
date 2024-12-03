@@ -71,6 +71,7 @@ Tile Board::fillTile(Tile tile, char type)
 }
 char Board::generateTile(int track, int idx)
 {
+    //return 'C';
     int roll = rand() % _BOARD_SIZE;
     // Grassland, 20/52 if t0, 29/52 if t1
     if (roll < (_BOARD_SIZE / 2 + track * 9))
@@ -282,6 +283,7 @@ void Board::drawPlayers(Player players[])
 }
 void Board::displayBoard(Player players[])
 {
+    wclear(board);
     box(board, 0, 0);
     mvwaddstr(board, 0, 1, "Game Board");
     mvwaddstr(board, 1, 2, "Didn't Pack");

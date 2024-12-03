@@ -12,7 +12,6 @@
 #include <vector>
 #include <fstream>
 using namespace std;
-ofstream debug("debug.txt");
 Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW *ROLL, WINDOW *COMPANION)
 {
     _board = Board(BOARD);
@@ -26,6 +25,7 @@ Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW 
     _players[4];
     _turnNum = 0;
     initTiles();
+    
 }
 void Game::displayBoard()
 {
@@ -184,6 +184,41 @@ vector <string> Game::getCompanion(){
     return companionMenu.returnChoice(companionChoice);
 
 }
+void Game::displayFinal()
+{
+    box(_MENU, 0,0);
+    mvwaddstr(_MENU, 0, 1, "Final Leaderboard");
+    mvwaddstr(_MENU, 1,2, "age|str|stamina|provis");
+    Stats gameStat[4];
+    Stats nullStat;
+    nullStat.points = -1;
+    for (int i = 0; i < 4; i++)
+    {
+        if(i < _numPlayers){
+            gameStat[i] = _players[i].printFinalStats();
+        }else{
+            gameStat[i] = nullStat;
+        }
+    }
+    int positions[4];
+    generatePositionArray(gameStat,positions);
+
+    int offset = 0;
+    for(int i = 0; i < _numPlayers; i++){
+        if(gameStat[i].name != ""){        
+            if(i == _turn){wattron(_MENU,A_STANDOUT);}
+            // const char* cName = flatName.c_str();
+            const char* cName = gameStat[i].name.c_str();
+            mvwaddstr(_MENU, 2 + positions[i]*3, 1, cName);
+            const char* cStat = gameStat[i].display.c_str();
+            mvwaddstr(_MENU, 3 + positions[i]*3, 2, cStat);
+            if(i == _turn){wattroff(_MENU,A_STANDOUT);}
+            offset ++;
+        }
+    }
+    wrefresh(_MENU);
+}
+
 void Game::pickPath(int player){
     
     Menu pathSel(_MENU, _players[player].getName().c_str(),{"Did you remember to pack?"},{"Yes","No"},{"Better stats, companion,", "Charge boldly forward"},{"and you have a map", "you get the early worms"});
@@ -220,7 +255,7 @@ void Game::basicTileDisplay(string name, vector <string> text){
 bool Game::riddleTile(string name,vector <string> text){
     int riddleNum = rand() % _riddles.size();
     string riddle = _riddles.at(riddleNum);
-    _riddles.erase(_riddles.begin() + riddleNum);
+    //_riddles.erase(_riddles.begin() + riddleNum);
     stringstream riddleStream(riddle);
     string temp;
     getline(riddleStream,temp,'|');
@@ -239,7 +274,7 @@ bool Game::riddleTile(string name,vector <string> text){
         } else{
             return false;
             }
-    } else{
+    } else if(type != 0){
         //multiple choice
         riddleStream << '|';
         vector <string> riddleResponses(type);
@@ -264,25 +299,27 @@ bool Game::riddleTile(string name,vector <string> text){
             return false;
         }
     }
+    return false;
 }   
 void Game::eventTile(string name,int player){
-    debug << "In event" << endl;
+    
+    //debug << "In event" << endl;
     string temp;
     int pPos[2] = {0,0};
     int pathType = -1;
     _players[player].getPos(pPos);
-    debug << "loaded pos" << endl;
+    //debug << "loaded pos" << endl;
     stringstream eventString;
     string eventText;
     string eventPass;
     string eventFail;
-    debug << _events.size() <<endl;
+    // debug << _events.size() <<endl;
     int eventNum = rand() % (_events.size());
     do{
         eventNum = rand() % (_events.size());
-        debug << "eventNum: " <<eventNum << endl;
+        // debug << "eventNum: " <<eventNum << endl;
         string event = _events.at(eventNum);
-        debug << "event: " << event <<endl;
+        // debug << "event: " << event <<endl;
         eventString.str(event);
         getline(eventString,eventText,'|');
         getline(eventString,eventPass,'|');
@@ -296,7 +333,7 @@ void Game::eventTile(string name,int player){
     int eventCond = stoi(temp);
     getline(eventString,temp);
     int eventPoints = stoi(temp);
-    debug << "Loaded event" << endl;
+    // debug << "Loaded event" << endl;
     //_events.erase(_events.begin() + eventNum+1);
     
     
@@ -452,12 +489,12 @@ void Game::executeTile(char tile,int pNum, int roll){
         break;
         case 'G':
             name = "Grasslands";
-            //DEBUG change 3 back to 0
-            if((rand() % 2) == 3){
+            //TODO change 3 back to 0
+            if((rand() % 2) == 0){
                 text = {"Nothing Happens"};
                 basicTileDisplay(name,text);
             }else{
-                debug << "calling event new" << endl;
+                // debug << "calling event new" << endl;
                 eventTile(name,pNum);
             }
         break;
@@ -487,7 +524,7 @@ bool Game::runTurn(){
     for(int i = 0; i < _numPlayers; i++){
         int ppos[2];
         _players[i].getPos(ppos);
-        if(ppos[0] < 51){
+        if(ppos[1] < 51){
             displayCompanion(i);
             _board.displayBoard(_players);
             turn(i);
@@ -502,7 +539,7 @@ bool Game::runTurn(){
 void Game::displayCompanion(int pNum){
     wclear(_COMPANION);
     box(_COMPANION, 0,0);
-    mvwaddstr(_COMPANION, 0, 1, "Leaderboard");
+    mvwaddstr(_COMPANION, 0, 1, "Companion");
     vector <string> companion = _players[pNum].getCompanion();
     for(int i = 0; i < 3; i++){
         mvwaddstr(_COMPANION, 1+i,2, companion[i].c_str());

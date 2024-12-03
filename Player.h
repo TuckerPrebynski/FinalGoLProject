@@ -100,8 +100,8 @@ public:
         if(_idx < 0){
             _idx = 0;
         }
-        if(_idx > 52){
-            _idx = 52;
+        if(_idx > 51){
+            _idx = 51;
         }
     }
     // update the stored strength
@@ -166,6 +166,23 @@ public:
         }
         stringstream statsOut; 
         statsOut <<"|"<<_age<<"|"<<_strength<<"|"<<_stamina<<"|"<<_provisions<<"|"<<_bugs_points;
+
+        statsOut >> pStat.display;
+        return pStat;
+    }
+    Stats printFinalStats(){
+        Stats pStat;
+        
+        if(_name == ""){
+            pStat.points = -1;
+        }else{
+        pStat.points = _bugs_points + 100*(_strength + _stamina + _provisions); 
+        }
+        stringstream nameStr(_name);
+        nameStr << " Final Points: " << pStat.points;
+        nameStr >> pStat.name;
+        stringstream statsOut; 
+        statsOut <<"|"<<_age<<"|"<<_strength<<"|"<<_stamina<<"|"<<_provisions;
 
         statsOut >> pStat.display;
         return pStat;

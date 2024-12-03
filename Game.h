@@ -53,11 +53,13 @@ public:
     bool runTurn();
     void displayCompanion(int pNum);
     vector <string> getCompanion();
+    void displayFinal();
 private:
     /// @brief populate given array of numbers 1-4 indicating the ordered positions of each player object;
     /// @param players array of Stats objects to rank
     /// @param oldPositionArray the array to output the ranks to
     void generatePositionArray(Stats players[4],int oldPositionArray[4]);
+    // ofstream debug;
     int polePosition(Stats arrIn[4],int arrOut[4],int intIn);
     void initTiles();
     void executeTile(char tile,int pNum,int roll);

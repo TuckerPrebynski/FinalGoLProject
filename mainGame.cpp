@@ -25,15 +25,15 @@ using namespace std;
 
 
 
-int main(int argc, char **argv)
+int main()
 {
+    
     srand(time(0));
     // init screen and sets up screen
     initscr();
     noecho();
     cbreak();
-
-    refresh();
+    //debug << "ncurses init \n";
     WINDOW *menuWin = newwin(15, 30, LINES / 2 - 10, COLS / 2 - 5);
     WINDOW *menuLongWin = newwin(25, 30, LINES / 2 - 10, COLS / 2 - 5);
 
@@ -42,8 +42,11 @@ int main(int argc, char **argv)
     WINDOW *companionWin = newwin(5, 30, LINES - 16, 32);
     WINDOW *rollWin = newwin(10, 15, LINES - 26, 31);
     Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin);
+    //addstr("debug");
+    //getch();
     refresh();
-    
+    //debug << "windows init \n";    
+    refresh();
     //if no saved game state
     gameState.playerSelect();
     //else read from file
@@ -62,6 +65,7 @@ int main(int argc, char **argv)
         gameState.displayBoard();
         gameState.displayStats();
     }
+    gameState.displayFinal();
     
 
 

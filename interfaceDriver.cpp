@@ -81,7 +81,7 @@ void Menu::fixText(){
     vector <string> newText;
     vector <string> newTextTemp;
     string temp;
-    int maxlen = getmaxx(MENU)-4;
+    int maxlen = (getmaxx(MENU)-4 > 0) ? getmaxx(MENU)-3: 11;
     for(int i = 0; i < _text.size();i++){
         newTextTemp = splitString({_text.at(i)},maxlen);
         for(int ii = 0; ii < newTextTemp.size();ii++){

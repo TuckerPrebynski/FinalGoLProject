@@ -46,7 +46,7 @@ vector <string> splitString(vector <string> toSplit,int maxLen){
     return toSplit;
 }
 int main(){
-    vector <string> text = {"THIS IS A LONG STRING","THIS IS ANOTHEREERERERERER LONG STRING","YOULL NEVER GUESS WHAT THIS IS"};
+    vector <string> text = {"THIS IS A LONG STRING","Short","THIS IS ANOTHEREERERERERER LONG STRING","YOULL NEVER GUESS WHAT THIS IS"};
     vector <string> textOut;
     vector <string> textTemp;
     for(int i = 0; i < text.size();i++){
