@@ -42,7 +42,7 @@ int main()
     WINDOW *companionWin = newwin(5, 30, LINES - 16, 32);
     WINDOW *rollWin = newwin(10, 15, LINES - 26, 31);
     Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin);
-    //addstr("debug");
+    //addstr("debug");  
     //getch();
     refresh();
     //debug << "windows init \n";    
