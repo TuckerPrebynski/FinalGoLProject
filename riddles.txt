@@ -1,5 +1,5 @@
 (1-short ans, 2-4-muliple choice)|Question|ans
-1|What can sting like a bee, but float like a butterfly?|Mike Tyson
+1|What can sting like a bee, but float like a butterfly?|A Bee
 2|This statement is True|True|False
 1|Who won the 1963 World Series|Dodgers
 4|How many fingers am I holding up|3|2|1|4

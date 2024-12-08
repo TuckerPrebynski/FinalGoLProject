@@ -564,8 +564,10 @@ void Game::turn(int pNum){
     charMenu.enterText(3, 2);
     displayRoll();
     int roll = rollDie();
+    
     _players[pNum].changePos(roll);
     _board.displayBoard(_players);
+    
     refresh();
     wrefresh(_BOARD);
     int pPos[2];
