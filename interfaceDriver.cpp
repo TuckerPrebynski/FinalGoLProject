@@ -106,7 +106,12 @@ void Menu::displayMenu(){
 void Menu::changeName(string name){
     _name = name;
 }
-void Menu::changeChoices(vector <string> choices, vector <string> choiceText, vector <string> choiceText2){
+void Menu::changeText(vector<string> newText)
+{
+    _text = newText;
+}
+void Menu::changeChoices(vector<string> choices, vector<string> choiceText, vector<string> choiceText2)
+{
     _choices = choices;
     _choiceText = choiceText;
     _choiceText2 = choiceText2;
@@ -203,15 +208,20 @@ string Menu::enterText(int x, int y){
         input = wgetch(MENU);
         if((input == KEY_ENTER)||(input == '\n')){
             break;
-        } else if(input == KEY_BACKSPACE){
-            y--;
-            text.pop_back();
-            wmove(MENU,x,y);
-        } else{
-            waddch(MENU,input);
-            text += input;
-            y++;
-        }
+        }else if(x >=0){ 
+            if(input == KEY_BACKSPACE){
+                //y--;
+                text.pop_back();
+                // wmove(MENU,x,y);
+                // waddch(MENU,' ');
+                // wmove(MENU,x,y);
+            } else{
+                //waddch(MENU,input);
+                text += input;
+                //y++;
+            }
+            mvwaddstr(MENU,x,y,(text+' ').c_str());
+        } else{ text += input;}
     }
     return text;
 }

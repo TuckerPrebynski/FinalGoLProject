@@ -61,6 +61,8 @@ public:
     /// @param idx the index of the tile
     /// @return what kind of tile it is from char list
     char getTileType(int track, int idx);
+    /// @brief refresh the board diplay window
+    void refreshBoard(){ wrefresh(board);}
 
 };
 #endif

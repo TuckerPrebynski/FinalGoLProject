@@ -47,11 +47,8 @@ int main()
     //addstr("debug");  
     //getch();
     refresh();
-    //debug << "windows init \n";    
     refresh();
-    //if no saved game state
     gameState.playerSelect();
-    //else read from file
     gameState.displayBoard();
     gameState.displayStats();
     gameState.firstTurn();
@@ -68,7 +65,7 @@ int main()
         gameState.displayStats();
     }
     gameState.displayFinal();
-    
+    gameState.saveStateToFile();
 
 
 
