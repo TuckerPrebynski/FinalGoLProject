@@ -22,7 +22,8 @@ using namespace std;
 
 // Compile command
 //  g++ mainGame.cpp BoardDriver.cpp interfaceDriver.cpp gameDriver.cpp -lncurses -DNCURSES_STATIC
-
+//RECS
+//Menu wi/ 5 options & min 2 secondary choices
 
 
 int main()
@@ -34,14 +35,15 @@ int main()
     noecho();
     cbreak();
     //debug << "ncurses init \n";
-    WINDOW *menuWin = newwin(15, 30, LINES / 2 - 10, COLS / 2 - 5);
-    WINDOW *menuLongWin = newwin(25, 30, LINES / 2 - 10, COLS / 2 - 5);
+    WINDOW *menuWin = newwin(15, 30, LINES - 26, 63);
+    WINDOW *legendWin = newwin(10, 15, LINES - 26, 31);
+    WINDOW *menuLongWin = newwin(25, 30, LINES -26, 63);
 
     WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
     WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
     WINDOW *companionWin = newwin(5, 30, LINES - 16, 32);
-    WINDOW *rollWin = newwin(10, 15, LINES - 26, 31);
-    Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin);
+    WINDOW *rollWin = newwin(10, 15, LINES - 26, 47);
+    Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin,legendWin);
     //addstr("debug");  
     //getch();
     refresh();

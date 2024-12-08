@@ -12,7 +12,7 @@
 #include <vector>
 #include <fstream>
 using namespace std;
-Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW *ROLL, WINDOW *COMPANION)
+Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW *ROLL, WINDOW *COMPANION, WINDOW *LEGEND)
 {
     _board = Board(BOARD);
     _BOARD = BOARD;
@@ -20,6 +20,7 @@ Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW 
     _LONGMENU = LONGMENU;
     _STATS = STATS;
     _ROLL = ROLL;
+    _LEGEND = LEGEND;
     _COMPANION = COMPANION;
     _numPlayers = 0;
     _players[4];
@@ -28,7 +29,8 @@ Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW 
     
 }
 void Game::displayBoard()
-{
+{   
+    displayLegend();
     _board.displayBoard(_players);
     refresh();
     wrefresh(_BOARD);
@@ -218,6 +220,44 @@ void Game::displayFinal()
     }
     wrefresh(_MENU);
 }
+#define START_COLOR 1
+#define END_COLOR 2
+#define PLAIN_COLOR 3
+#define OASIS_COLOR 4
+#define BRIDGE_COLOR 5
+#define BOULDER_COLOR 6
+#define TRAVELER_COLOR 6
+#define CHALLENGE_COLOR 7
+void Game::displayLegend()
+{   box(_LEGEND,0,0);
+    mvwaddstr(_LEGEND, 0, 1, "Legend");   
+    start_color();
+    init_pair(START_COLOR, COLOR_BLACK, COLOR_WHITE);
+    init_pair(END_COLOR, COLOR_RED, COLOR_YELLOW);
+
+    init_pair(PLAIN_COLOR, COLOR_YELLOW, COLOR_GREEN);
+
+    init_pair(OASIS_COLOR, COLOR_CYAN, COLOR_CYAN);
+    init_pair(BRIDGE_COLOR, COLOR_BLACK, COLOR_BLUE);
+    init_pair(BOULDER_COLOR, COLOR_WHITE, COLOR_BLACK);
+    init_pair(CHALLENGE_COLOR, COLOR_WHITE, COLOR_MAGENTA);
+    string tilesName[]={"Start","Finish","Plains","Oasis","Bridge","Boulder","Companion","Challenge"};
+    int tilesColor[] = {START_COLOR,END_COLOR,PLAIN_COLOR,OASIS_COLOR,BRIDGE_COLOR,BOULDER_COLOR,BOULDER_COLOR,CHALLENGE_COLOR};
+    string tilesDisp[]={"| |","| |","| |","|~|","|=|","|o|","|&|","|?|"};
+    int startRow = 2;
+    int startCol = 1;
+    for (int i = 0; i < 8; i++)
+    {
+        string disp = tilesDisp[i];
+        wmove(_LEGEND,startCol+i,startRow);
+        wattron(_LEGEND, COLOR_PAIR(tilesColor[i]));
+        waddstr(_LEGEND, disp.c_str());
+        wattroff(_LEGEND, COLOR_PAIR(tilesColor[i]));
+        wmove(_LEGEND,startCol+i,startRow+4);
+        waddstr(_LEGEND,tilesName[i].c_str());
+    }
+    wrefresh(_LEGEND);
+}
 
 void Game::pickPath(int player){
     
@@ -384,7 +424,7 @@ bool Game::testCond(int condType, int cond, int pNum){
                 return true;
             }
             break;
-        case 2:
+        case 2:    
             //strength
             if(player.getStrength() >= cond){
                 return true;

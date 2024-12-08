@@ -24,11 +24,12 @@ public:
     WINDOW * _STATS;
     WINDOW *_ROLL;
     WINDOW *_COMPANION;
+    WINDOW *_LEGEND;
     int _turnNum;
     vector <string> _riddles;
     vector <string> _events;
     vector <string> _companions;
-    Game(WINDOW *BOARD, WINDOW *MENU, WINDOW *LONGMENU, WINDOW * STATS,WINDOW* ROLL, WINDOW* COMPANION);
+    Game(WINDOW *BOARD, WINDOW *MENU, WINDOW *LONGMENU, WINDOW * STATS,WINDOW* ROLL, WINDOW* COMPANION,WINDOW *LEGEND);
     /// @brief disply the board state
     void displayBoard();
     /// @brief run the start/player select routine
@@ -54,6 +55,7 @@ public:
     void displayCompanion(int pNum);
     vector <string> getCompanion();
     void displayFinal();
+    void displayLegend();
 private:
     /// @brief populate given array of numbers 1-4 indicating the ordered positions of each player object;
     /// @param players array of Stats objects to rank
