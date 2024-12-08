@@ -48,18 +48,28 @@ public:
     /// @brief runs the initial path selection and first turn sequence for the given player, used only at start of game
     /// @param player player num
     void pickPath(int player);
+    
+    /// @brief run the first turn for each player
     void firstTurn();
     void eventTile(string name, int player);
+    /// @brief Execute a full turn 
+    /// @return true if not all players have finished
     bool runTurn();
+    /// @brief update companion window
+    /// @param pNum the current player
     void displayCompanion(int pNum);
+    /// @brief Change player companion
+    /// @return the companion string
     vector <string> getCompanion();
+    /// @brief Display the final stats in MENU window
     void displayFinal();
 private:
     /// @brief populate given array of numbers 1-4 indicating the ordered positions of each player object;
     /// @param players array of Stats objects to rank
     /// @param oldPositionArray the array to output the ranks to
     void generatePositionArray(Stats players[4],int oldPositionArray[4]);
-    // ofstream debug;
+    void playerBattle(int p1, int p2);
+    void pBWin(int winner, int loser);
     int polePosition(Stats arrIn[4],int arrOut[4],int intIn);
     void initTiles();
     void executeTile(char tile,int pNum,int roll);

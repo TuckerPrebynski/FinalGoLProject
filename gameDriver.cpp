@@ -58,6 +58,67 @@ void Game::generatePositionArray(Stats players[4],int oldPositionArray[4]){
     }
 
 }
+void Game::playerBattle(int p1, int p2)
+{
+    Menu startMenu(_MENU,"Battle",{_players[p1].getName()+ " fights "+ _players[p2].getName() + " for the space!"});
+    startMenu.displayMenu();
+    startMenu.enterText(4,2);
+    int pSet[2] = {p1,p2};
+    string throws[2] = {"",""};
+    Menu playerMenu(_MENU,"temp",{"Rock Paper Scissors","Press either Rock(z) Paper(x) or Scissors(c) then enter"});
+    for(int i = 0; i < 2; i++){
+        playerMenu.changeName(_players[pSet[i]].getName());
+        playerMenu.displayMenu();
+        string pChoice = playerMenu.enterText(-1, 2);
+        while((pChoice!="z")&&(pChoice!="x")&&(pChoice!="c")){
+            playerMenu.changeText({"Rock Paper Scissors","Press either Rock(z) Paper(x) or Scissors(c) then enter","Not an option. Try again"});
+            playerMenu.displayMenu();
+            string pChoice = playerMenu.enterText(-1, 2);
+        }
+        throws[i] = pChoice;
+    }
+    if (throws[0] == throws[1]){
+        Menu drawMenu(_MENU,"Battle",{"You Drew","Press enter to play again"});
+        drawMenu.displayMenu();
+        drawMenu.enterText(3,2);
+        playerBattle(p1,p2);
+    }
+    if(throws[0] == "z"){
+        if(throws[1] == "x"){
+            pBWin(p2,p1);
+        }else{pBWin(p1,p2);}
+    }else if(throws[0] == "x"){
+        if(throws[1] == "c"){
+            pBWin(p2,p1);
+        }else{pBWin(p1,p2);}
+    }else if(throws[0] == "c"){
+        if(throws[1] == "z"){
+            pBWin(p2,p1);
+    }else{pBWin(p1,p2);}
+    }
+}
+
+void Game::pBWin(int winner, int loser)
+{
+    string wintext = _players[winner].getName();
+    wintext += " Wins!";
+    
+    string losetext = "They get 10% of ";
+    losetext += _players[loser].getName();
+    losetext += "'s bugs, and get to keep the space.";
+    
+    Menu winMenu(_MENU,wintext,{losetext.c_str(), "Press enter to roll to see how far the loser moves back"});
+    winMenu.displayMenu();
+    int pointSteal = _players[loser].getBugsPoints() * .1;
+    _players[loser].addBugsPoints(-1*pointSteal);
+    _players[winner].addBugsPoints(pointSteal);
+    displayStats();
+    winMenu.enterText(5,2);
+    displayRoll();
+    int roll = rollDie();
+    _players[loser].changePos(roll*-1);
+    _board.displayBoard(_players);
+}
 void Game::displayStats()
 {
     box(_STATS, 0,0);
@@ -79,12 +140,9 @@ void Game::displayStats()
     int offset = 0;
     for(int i = 0; i < _numPlayers; i++){
         if(gameStat[i].name != ""){        
-            // stringstream cNamePoints;
-            // cNamePoints << gameStat[i].name << " | " << to_string(gameStat[i].points);
-            // string flatName;
-            // cNamePoints >> flatName;
+            
             if(i == _turn){wattron(_STATS,A_STANDOUT);}
-            // const char* cName = flatName.c_str();
+            
             const char* cName = gameStat[i].name.c_str();
             mvwaddstr(_STATS, 2 + positions[i]*3, 1, cName);
             const char* cStat = gameStat[i].display.c_str();
@@ -107,6 +165,7 @@ void Game::playerSelect()
 
     Menu characterMenu(_LONGMENU, "Character Selection", {"Select your Character", "strength|stamina|provis|bugs"});
     characterMenu.getFromFile("characters.txt");
+    _board.refreshBoard();
     string nameTitle = "Player 1";
     Menu playerMenu(_MENU, nameTitle, {"Enter your name: "});
 
@@ -181,6 +240,7 @@ vector <string> Game::getCompanion(){
     companionMenu.getFromFile("companions.txt");
     companionMenu.displayMenu();
     int companionChoice = companionMenu.getChoice(3,2);
+    _board.refreshBoard();
     return companionMenu.returnChoice(companionChoice);
 
 }
@@ -207,7 +267,6 @@ void Game::displayFinal()
     for(int i = 0; i < _numPlayers; i++){
         if(gameStat[i].name != ""){        
             if(i == _turn){wattron(_MENU,A_STANDOUT);}
-            // const char* cName = flatName.c_str();
             const char* cName = gameStat[i].name.c_str();
             mvwaddstr(_MENU, 2 + positions[i]*3, 1, cName);
             const char* cStat = gameStat[i].display.c_str();
@@ -236,7 +295,12 @@ void Game::pickPath(int player){
 }
 void Game::saveStateToFile(){
     ofstream out_file("gameState.txt");
-    out_file << _turnNum << endl;
+    for(int i = 0; i < _numPlayers; i++){
+        Stats pStat = _players[i].printFinalStats();
+        out_file << pStat.name << endl;
+        out_file << "  " << pStat.display << endl;
+        out_file << "_______________________" << endl << endl;
+    }
 
 
 }
@@ -255,7 +319,6 @@ void Game::basicTileDisplay(string name, vector <string> text){
 bool Game::riddleTile(string name,vector <string> text){
     int riddleNum = rand() % _riddles.size();
     string riddle = _riddles.at(riddleNum);
-    //_riddles.erase(_riddles.begin() + riddleNum);
     stringstream riddleStream(riddle);
     string temp;
     getline(riddleStream,temp,'|');
@@ -303,23 +366,18 @@ bool Game::riddleTile(string name,vector <string> text){
 }   
 void Game::eventTile(string name,int player){
     
-    //debug << "In event" << endl;
     string temp;
     int pPos[2] = {0,0};
     int pathType = -1;
     _players[player].getPos(pPos);
-    //debug << "loaded pos" << endl;
     stringstream eventString;
     string eventText;
     string eventPass;
     string eventFail;
-    // debug << _events.size() <<endl;
     int eventNum = rand() % (_events.size());
     do{
         eventNum = rand() % (_events.size());
-        // debug << "eventNum: " <<eventNum << endl;
         string event = _events.at(eventNum);
-        // debug << "event: " << event <<endl;
         eventString.str(event);
         getline(eventString,eventText,'|');
         getline(eventString,eventPass,'|');
@@ -333,8 +391,6 @@ void Game::eventTile(string name,int player){
     int eventCond = stoi(temp);
     getline(eventString,temp);
     int eventPoints = stoi(temp);
-    // debug << "Loaded event" << endl;
-    //_events.erase(_events.begin() + eventNum+1);
     
     
     bool condPass = testCond(eventCondType,eventCond,player);
@@ -476,7 +532,6 @@ void Game::executeTile(char tile,int pNum, int roll){
         case 'C':
             name = "Riddle";
             text = {"A strange man asks you:"};
-            //basicTileDisplay(name,text);
 
             if(riddleTile(name,text)){
                 //got riddle right
@@ -494,7 +549,6 @@ void Game::executeTile(char tile,int pNum, int roll){
                 text = {"Nothing Happens"};
                 basicTileDisplay(name,text);
             }else{
-                // debug << "calling event new" << endl;
                 eventTile(name,pNum);
             }
         break;
@@ -516,6 +570,16 @@ void Game::turn(int pNum){
     wrefresh(_BOARD);
     int pPos[2];
     _players[pNum].getPos(pPos);
+    for(int i = 0 ; i <_numPlayers; i ++){
+        
+        if(!(i == pNum)){
+            int p2Pos[2];
+            _players[i].getPos(p2Pos);
+            if((p2Pos[0] == pPos[0] )&&(p2Pos[1] == pPos[1])){
+                playerBattle(pNum,i);
+            }
+        }
+    }
     char tile = _board.getTileType(pPos[0],pPos[1]);
     executeTile(tile,pNum,roll);
 }

@@ -59,13 +59,36 @@ class Menu{
         /// @param y 
         /// @return valid choice 0 - number of choices possible
         int getChoice(int x, int y);
+        /// @brief Prompts user for text entry. Accepts input until enter is hit, then returns the typed string
+        /// @param x row of text entry field. if less than zero, no field will be displayed
+        /// @param y col of field
+        /// @return the entered string
         string enterText(int x, int y);
         /// @brief draws the menu box, title, and text to window. Does not refresh
         void displayMenu();
+        /// @brief return text vector containing the strings for the given choice
+        /// @param choice integer describing what choice to return
+        /// @return choice name, choice text, choice text2
         vector <string> returnChoice(int choice);
+        /// @brief Change Menu name
+        /// @param name 
         void changeName(string name);
+        /// @brief Change menu text
+        /// @param newText 
+        void changeText(vector <string> newText);
+        /// @brief Change choice vectors
+        /// @param choices 
+        /// @param choiceText 
+        /// @param choiceText2 
         void changeChoices(vector <string> choices, vector <string> choiceText, vector <string> choiceText2);
+        /// @brief Read choice data from file
+        /// @param fileName 
         void getFromFile(string fileName);
+        /// @brief Applies chosen character to new player object, and returns it;
+        /// @param choice the chosen character
+        /// @param name player's name
+        /// @param piece board display character
+        /// @return 
         Player processCharacterSelection(int choice, string name, char piece);
       };
 #endif

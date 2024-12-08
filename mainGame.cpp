@@ -33,23 +33,17 @@ int main()
     initscr();
     noecho();
     cbreak();
-    //debug << "ncurses init \n";
-    WINDOW *menuWin = newwin(15, 30, LINES / 2 - 10, COLS / 2 - 5);
-    WINDOW *menuLongWin = newwin(25, 30, LINES / 2 - 10, COLS / 2 - 5);
+    WINDOW *menuWin = newwin(15, 30, 1, COLS / 2 - 5);
+    WINDOW *menuLongWin = newwin(25, 30, 1, COLS / 2 - 5);
 
-    WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
-    WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
-    WINDOW *companionWin = newwin(5, 30, LINES - 16, 32);
-    WINDOW *rollWin = newwin(10, 15, LINES - 26, 31);
+    WINDOW *boardWin = newwin(7, 200, 17, 1);
+    WINDOW *statsWin = newwin(15, 30, 1, 1);
+    WINDOW *companionWin = newwin(5, 30, 11, 32);
+    WINDOW *rollWin = newwin(10, 15, 1, 31);
     Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin);
-    //addstr("debug");
-    //getch();
     refresh();
-    //debug << "windows init \n";    
     refresh();
-    //if no saved game state
     gameState.playerSelect();
-    //else read from file
     gameState.displayBoard();
     gameState.displayStats();
     gameState.firstTurn();
@@ -66,7 +60,7 @@ int main()
         gameState.displayStats();
     }
     gameState.displayFinal();
-    
+    gameState.saveStateToFile();
 
 
 
