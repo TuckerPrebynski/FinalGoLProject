@@ -12,7 +12,7 @@
 #include <vector>
 #include <fstream>
 using namespace std;
-Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW *ROLL, WINDOW *COMPANION, WINDOW *LEGEND)
+Game::Game(WINDOW *BOARD, WINDOW *MENU, WINDOW *LONGMENU, WINDOW *STATS, WINDOW *ROLL, WINDOW *COMPANION, WINDOW *LEGEND)
 {
     _board = Board(BOARD);
     _BOARD = BOARD;
@@ -26,77 +26,106 @@ Game::Game(WINDOW *BOARD, WINDOW *MENU,WINDOW *LONGMENU, WINDOW * STATS, WINDOW 
     _players[4];
     _turnNum = 0;
     initTiles();
-    
 }
 void Game::displayBoard()
-{   
+{
     displayLegend();
     _board.displayBoard(_players);
     refresh();
     wrefresh(_BOARD);
 }
 
-int Game::polePosition(Stats arrIn[4],int arrOut[4],int intIn){
+int Game::polePosition(Stats arrIn[4], int arrOut[4], int intIn)
+{
     int pos = 5;
-    for(int i = 0; i < 4; i++){
-        if(arrIn[i].points <= intIn){
+    for (int i = 0; i < 4; i++)
+    {
+        if (arrIn[i].points <= intIn)
+        {
             pos -= 1;
         }
     }
-    for(int j = 0; j < 4; j ++){
-        if(pos == arrOut[j]){
-            pos ++;
+    for (int j = 0; j < 4; j++)
+    {
+        if (pos == arrOut[j])
+        {
+            pos++;
         }
     }
     return pos;
 }
-void Game::generatePositionArray(Stats players[4],int oldPositionArray[4]){
-    int positionArray[4] = {-1,-1,-1,-1};
-    for(int i = 0; i < _numPlayers; i++){
-        positionArray[i] = polePosition(players,positionArray,players[i].points);
+void Game::generatePositionArray(Stats players[4], int oldPositionArray[4])
+{
+    int positionArray[4] = {-1, -1, -1, -1};
+    for (int i = 0; i < _numPlayers; i++)
+    {
+        positionArray[i] = polePosition(players, positionArray, players[i].points);
     }
-    for(int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++)
+    {
         oldPositionArray[i] = positionArray[i] - 1;
     }
-
 }
 void Game::playerBattle(int p1, int p2)
 {
-    Menu startMenu(_MENU,"Battle",{_players[p1].getName()+ " fights "+ _players[p2].getName() + " for the space!"});
+    Menu startMenu(_MENU, "Battle", {_players[p1].getName() + " fights " + _players[p2].getName() + " for the space!"});
     startMenu.displayMenu();
-    startMenu.enterText(4,2);
-    int pSet[2] = {p1,p2};
-    string throws[2] = {"",""};
-    Menu playerMenu(_MENU,"temp",{"Rock Paper Scissors","Press either Rock(z) Paper(x) or Scissors(c) then enter"});
-    for(int i = 0; i < 2; i++){
+    startMenu.enterText(4, 2);
+    int pSet[2] = {p1, p2};
+    string throws[2] = {"", ""};
+    Menu playerMenu(_MENU, "temp", {"Rock Paper Scissors", "Press either Rock(z) Paper(x) or Scissors(c) then enter"});
+    for (int i = 0; i < 2; i++)
+    {
         playerMenu.changeName(_players[pSet[i]].getName());
         playerMenu.displayMenu();
         string pChoice = playerMenu.enterText(-1, 2);
-        while((pChoice!="z")&&(pChoice!="x")&&(pChoice!="c")){
-            playerMenu.changeText({"Rock Paper Scissors","Press either Rock(z) Paper(x) or Scissors(c) then enter","Not an option. Try again"});
+        while ((pChoice != "z") && (pChoice != "x") && (pChoice != "c"))
+        {
+            playerMenu.changeText({"Rock Paper Scissors", "Press either Rock(z) Paper(x) or Scissors(c) then enter", "Not an option. Try again"});
             playerMenu.displayMenu();
             string pChoice = playerMenu.enterText(-1, 2);
         }
         throws[i] = pChoice;
     }
-    if (throws[0] == throws[1]){
-        Menu drawMenu(_MENU,"Battle",{"You Drew","Press enter to play again"});
+    if (throws[0] == throws[1])
+    {
+        Menu drawMenu(_MENU, "Battle", {"You Drew", "Press enter to play again"});
         drawMenu.displayMenu();
-        drawMenu.enterText(3,2);
-        playerBattle(p1,p2);
+        drawMenu.enterText(3, 2);
+        playerBattle(p1, p2);
     }
-    if(throws[0] == "z"){
-        if(throws[1] == "x"){
-            pBWin(p2,p1);
-        }else{pBWin(p1,p2);}
-    }else if(throws[0] == "x"){
-        if(throws[1] == "c"){
-            pBWin(p2,p1);
-        }else{pBWin(p1,p2);}
-    }else if(throws[0] == "c"){
-        if(throws[1] == "z"){
-            pBWin(p2,p1);
-    }else{pBWin(p1,p2);}
+    if (throws[0] == "z")
+    {
+        if (throws[1] == "x")
+        {
+            pBWin(p2, p1);
+        }
+        else
+        {
+            pBWin(p1, p2);
+        }
+    }
+    else if (throws[0] == "x")
+    {
+        if (throws[1] == "c")
+        {
+            pBWin(p2, p1);
+        }
+        else
+        {
+            pBWin(p1, p2);
+        }
+    }
+    else if (throws[0] == "c")
+    {
+        if (throws[1] == "z")
+        {
+            pBWin(p2, p1);
+        }
+        else
+        {
+            pBWin(p1, p2);
+        }
     }
 }
 
@@ -104,53 +133,64 @@ void Game::pBWin(int winner, int loser)
 {
     string wintext = _players[winner].getName();
     wintext += " Wins!";
-    
+
     string losetext = "They get 10% of ";
     losetext += _players[loser].getName();
     losetext += "'s bugs, and get to keep the space.";
-    
-    Menu winMenu(_MENU,wintext,{losetext.c_str(), "Press enter to roll to see how far the loser moves back"});
+
+    Menu winMenu(_MENU, wintext, {losetext.c_str(), "Press enter to roll to see how far the loser moves back"});
     winMenu.displayMenu();
     int pointSteal = _players[loser].getBugsPoints() * .1;
-    _players[loser].addBugsPoints(-1*pointSteal);
+    _players[loser].addBugsPoints(-1 * pointSteal);
     _players[winner].addBugsPoints(pointSteal);
     displayStats();
-    winMenu.enterText(5,2);
+    winMenu.enterText(5, 2);
     displayRoll();
     int roll = rollDie();
-    _players[loser].changePos(roll*-1);
+    _players[loser].changePos(roll * -1);
     _board.displayBoard(_players);
 }
 void Game::displayStats()
 {
-    box(_STATS, 0,0);
+    box(_STATS, 0, 0);
     mvwaddstr(_STATS, 0, 1, "Leaderboard");
-    mvwaddstr(_STATS, 1,2, "age|str|stamina|provis|bugs");
+    mvwaddstr(_STATS, 1, 2, "age|str|stamina|provis|bugs");
     Stats gameStat[4];
     Stats nullStat;
     nullStat.points = -1;
     for (int i = 0; i < 4; i++)
     {
-        if(i < _numPlayers){
+        if (i < _numPlayers)
+        {
             gameStat[i] = _players[i].printStats();
-        }else{
+        }
+        else
+        {
             gameStat[i] = nullStat;
         }
     }
     int positions[4];
-    generatePositionArray(gameStat,positions);
+    generatePositionArray(gameStat, positions);
     int offset = 0;
-    for(int i = 0; i < _numPlayers; i++){
-        if(gameStat[i].name != ""){        
-            
-            if(i == _turn){wattron(_STATS,A_STANDOUT);}
-            
-            const char* cName = gameStat[i].name.c_str();
-            mvwaddstr(_STATS, 2 + positions[i]*3, 1, cName);
-            const char* cStat = gameStat[i].display.c_str();
-            mvwaddstr(_STATS, 3 + positions[i]*3, 2, cStat);
-            if(i == _turn){wattroff(_STATS,A_STANDOUT);}
-            offset ++;
+    for (int i = 0; i < _numPlayers; i++)
+    {
+        if (gameStat[i].name != "")
+        {
+
+            if (i == _turn)
+            {
+                wattron(_STATS, A_STANDOUT);
+            }
+
+            const char *cName = gameStat[i].name.c_str();
+            mvwaddstr(_STATS, 2 + positions[i] * 3, 1, cName);
+            const char *cStat = gameStat[i].display.c_str();
+            mvwaddstr(_STATS, 3 + positions[i] * 3, 2, cStat);
+            if (i == _turn)
+            {
+                wattroff(_STATS, A_STANDOUT);
+            }
+            offset++;
         }
     }
     wrefresh(_STATS);
@@ -179,102 +219,116 @@ void Game::playerSelect()
         string pName = playerMenu.enterText(3, 2);
         characterMenu.displayMenu();
         int pChoice = characterMenu.getChoice(4, 2);
-        
+
         _players[i] = characterMenu.processCharacterSelection(pChoice, pName, i + '1');
         displayStats();
     }
     _board.setPlayerCount(_numPlayers);
 }
-void Game::displayRoll(){
+void Game::displayRoll()
+{
     int idx = 1;
-    wmove(_ROLL,1,1);
-    mvwaddstr(_ROLL,idx+ 0, 1," ________\n");
-    mvwaddstr(_ROLL,idx+ 1, 1,"|\\       \\\n");
-    mvwaddstr(_ROLL,idx+ 2, 1,"| \\       \\\n");
-    mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
-    mvwaddstr(_ROLL,idx+ 4, 1,"\\  |       |\n");
-    mvwaddstr(_ROLL,idx+ 5, 1," \\ |       |\n");
-    mvwaddstr(_ROLL,idx+ 6, 1,"  \\|_______|\n");
-    box(_ROLL,0,0);
+    wmove(_ROLL, 1, 1);
+    mvwaddstr(_ROLL, idx + 0, 1, " ________\n");
+    mvwaddstr(_ROLL, idx + 1, 1, "|\\       \\\n");
+    mvwaddstr(_ROLL, idx + 2, 1, "| \\       \\\n");
+    mvwaddstr(_ROLL, idx + 3, 1, "|  \\_______\\\n");
+    mvwaddstr(_ROLL, idx + 4, 1, "\\  |       |\n");
+    mvwaddstr(_ROLL, idx + 5, 1, " \\ |       |\n");
+    mvwaddstr(_ROLL, idx + 6, 1, "  \\|_______|\n");
+    box(_ROLL, 0, 0);
     wrefresh(_ROLL);
 }
-int Game::rollDie(){
+int Game::rollDie()
+{
     int roll = rand() % 6 + 1;
     int idx = 1;
-    switch(roll){
-        case 6:
-            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o  o \\\n");
-            mvwaddstr(_ROLL,idx+ 2, 1,"| \\  o  o \\\n");
-            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\__o__o_\\\n");
+    switch (roll)
+    {
+    case 6:
+        mvwaddstr(_ROLL, idx + 1, 1, "|\\  o  o \\\n");
+        mvwaddstr(_ROLL, idx + 2, 1, "| \\  o  o \\\n");
+        mvwaddstr(_ROLL, idx + 3, 1, "|  \\__o__o_\\\n");
         break;
-        case 5:
-            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o  o \\\n");
-            mvwaddstr(_ROLL,idx+ 2, 1,"| \\   o   \\\n");
-            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\__o__o_\\\n");
+    case 5:
+        mvwaddstr(_ROLL, idx + 1, 1, "|\\  o  o \\\n");
+        mvwaddstr(_ROLL, idx + 2, 1, "| \\   o   \\\n");
+        mvwaddstr(_ROLL, idx + 3, 1, "|  \\__o__o_\\\n");
         break;
-        case 4:
-            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o  o \\\n");
-            mvwaddstr(_ROLL,idx+ 2, 1,"| \\  o  o \\\n");
-            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+    case 4:
+        mvwaddstr(_ROLL, idx + 1, 1, "|\\  o  o \\\n");
+        mvwaddstr(_ROLL, idx + 2, 1, "| \\  o  o \\\n");
+        mvwaddstr(_ROLL, idx + 3, 1, "|  \\_______\\\n");
         break;
-        case 3:
-            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o    \\\n");
-            mvwaddstr(_ROLL,idx+ 2, 1,"| \\   o   \\\n");
-            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_____o_\\\n");
+    case 3:
+        mvwaddstr(_ROLL, idx + 1, 1, "|\\  o    \\\n");
+        mvwaddstr(_ROLL, idx + 2, 1, "| \\   o   \\\n");
+        mvwaddstr(_ROLL, idx + 3, 1, "|  \\_____o_\\\n");
         break;
-        case 2:
-            mvwaddstr(_ROLL,idx+ 1, 1,"|\\  o    \\\n");
-            mvwaddstr(_ROLL,idx+ 2, 1,"| \\     o \\\n");
-            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+    case 2:
+        mvwaddstr(_ROLL, idx + 1, 1, "|\\  o    \\\n");
+        mvwaddstr(_ROLL, idx + 2, 1, "| \\     o \\\n");
+        mvwaddstr(_ROLL, idx + 3, 1, "|  \\_______\\\n");
         break;
-        case 1:
-            mvwaddstr(_ROLL,idx+ 1, 1,"|\\       \\\n");
-            mvwaddstr(_ROLL,idx+ 2, 1,"| \\   o   \\\n");
-            mvwaddstr(_ROLL,idx+ 3, 1,"|  \\_______\\\n");
+    case 1:
+        mvwaddstr(_ROLL, idx + 1, 1, "|\\       \\\n");
+        mvwaddstr(_ROLL, idx + 2, 1, "| \\   o   \\\n");
+        mvwaddstr(_ROLL, idx + 3, 1, "|  \\_______\\\n");
         break;
     }
-    box(_ROLL,0,0);
+    box(_ROLL, 0, 0);
     wrefresh(_ROLL);
     return roll;
 }
-vector <string> Game::getCompanion(){
+vector<string> Game::getCompanion()
+{
     Menu companionMenu(_LONGMENU, "Companion Selection", {"Select your Companion"});
     companionMenu.getFromFile("companions.txt");
     companionMenu.displayMenu();
-    int companionChoice = companionMenu.getChoice(3,2);
+    int companionChoice = companionMenu.getChoice(3, 2);
     _board.refreshBoard();
     return companionMenu.returnChoice(companionChoice);
-
 }
 void Game::displayFinal()
 {
-    box(_MENU, 0,0);
+    box(_MENU, 0, 0);
     mvwaddstr(_MENU, 0, 1, "Final Leaderboard");
-    mvwaddstr(_MENU, 1,2, "age|str|stamina|provis");
+    mvwaddstr(_MENU, 1, 2, "age|str|stamina|provis");
     Stats gameStat[4];
     Stats nullStat;
     nullStat.points = -1;
     for (int i = 0; i < 4; i++)
     {
-        if(i < _numPlayers){
+        if (i < _numPlayers)
+        {
             gameStat[i] = _players[i].printFinalStats();
-        }else{
+        }
+        else
+        {
             gameStat[i] = nullStat;
         }
     }
     int positions[4];
-    generatePositionArray(gameStat,positions);
+    generatePositionArray(gameStat, positions);
 
     int offset = 0;
-    for(int i = 0; i < _numPlayers; i++){
-        if(gameStat[i].name != ""){        
-            if(i == _turn){wattron(_MENU,A_STANDOUT);}
-            const char* cName = gameStat[i].name.c_str();
-            mvwaddstr(_MENU, 2 + positions[i]*3, 1, cName);
-            const char* cStat = gameStat[i].display.c_str();
-            mvwaddstr(_MENU, 3 + positions[i]*3, 2, cStat);
-            if(i == _turn){wattroff(_MENU,A_STANDOUT);}
-            offset ++;
+    for (int i = 0; i < _numPlayers; i++)
+    {
+        if (gameStat[i].name != "")
+        {
+            if (i == _turn)
+            {
+                wattron(_MENU, A_STANDOUT);
+            }
+            const char *cName = gameStat[i].name.c_str();
+            mvwaddstr(_MENU, 2 + positions[i] * 3, 1, cName);
+            const char *cStat = gameStat[i].display.c_str();
+            mvwaddstr(_MENU, 3 + positions[i] * 3, 2, cStat);
+            if (i == _turn)
+            {
+                wattroff(_MENU, A_STANDOUT);
+            }
+            offset++;
         }
     }
     wrefresh(_MENU);
@@ -288,8 +342,9 @@ void Game::displayFinal()
 #define TRAVELER_COLOR 6
 #define CHALLENGE_COLOR 7
 void Game::displayLegend()
-{   box(_LEGEND,0,0);
-    mvwaddstr(_LEGEND, 0, 1, "Legend");   
+{
+    box(_LEGEND, 0, 0);
+    mvwaddstr(_LEGEND, 0, 1, "Legend");
     start_color();
     init_pair(START_COLOR, COLOR_BLACK, COLOR_WHITE);
     init_pair(END_COLOR, COLOR_RED, COLOR_YELLOW);
@@ -300,114 +355,138 @@ void Game::displayLegend()
     init_pair(BRIDGE_COLOR, COLOR_BLACK, COLOR_BLUE);
     init_pair(BOULDER_COLOR, COLOR_WHITE, COLOR_BLACK);
     init_pair(CHALLENGE_COLOR, COLOR_WHITE, COLOR_MAGENTA);
-    string tilesName[]={"Start","Finish","Plains","Oasis","Bridge","Boulder","Companion","Challenge"};
-    int tilesColor[] = {START_COLOR,END_COLOR,PLAIN_COLOR,OASIS_COLOR,BRIDGE_COLOR,BOULDER_COLOR,BOULDER_COLOR,CHALLENGE_COLOR};
-    string tilesDisp[]={"| |","| |","| |","|~|","|=|","|o|","|&|","|?|"};
+    string tilesName[] = {"Start", "Finish", "Plains", "Oasis", "Bridge", "Boulder", "Companion", "Challenge"};
+    int tilesColor[] = {START_COLOR, END_COLOR, PLAIN_COLOR, OASIS_COLOR, BRIDGE_COLOR, BOULDER_COLOR, BOULDER_COLOR, CHALLENGE_COLOR};
+    string tilesDisp[] = {"| |", "| |", "| |", "|~|", "|=|", "|o|", "|&|", "|?|"};
     int startRow = 2;
     int startCol = 1;
     for (int i = 0; i < 8; i++)
     {
         string disp = tilesDisp[i];
-        wmove(_LEGEND,startCol+i,startRow);
+        wmove(_LEGEND, startCol + i, startRow);
         wattron(_LEGEND, COLOR_PAIR(tilesColor[i]));
         waddstr(_LEGEND, disp.c_str());
         wattroff(_LEGEND, COLOR_PAIR(tilesColor[i]));
-        wmove(_LEGEND,startCol+i,startRow+4);
-        waddstr(_LEGEND,tilesName[i].c_str());
+        wmove(_LEGEND, startCol + i, startRow + 4);
+        waddstr(_LEGEND, tilesName[i].c_str());
     }
     wrefresh(_LEGEND);
 }
 
-void Game::pickPath(int player){
-    
-    Menu pathSel(_MENU, _players[player].getName().c_str(),{"Did you remember to pack?"},{"Yes","No"},{"Better stats, companion,", "Charge boldly forward"},{"and you have a map", "you get the early worms"});
+void Game::pickPath(int player)
+{
+
+    Menu pathSel(_MENU, _players[player].getName().c_str(), {"Did you remember to pack?"}, {"Yes", "No"}, {"Better stats, companion,", "Charge boldly forward"}, {"and you have a map", "you get the early worms"});
     pathSel.displayMenu();
-    int choice = pathSel.getChoice(3,2);
-    if (choice == 0){
-        _players[player].rememberToPack(500,500,1000);
+    int choice = pathSel.getChoice(3, 2);
+    if (choice == 0)
+    {
+        _players[player].rememberToPack(500, 500, 1000);
         _players[player].setCompanion(getCompanion());
         displayCompanion(player);
         _board.displayBoard(_players);
-    } else{
+    }
+    else
+    {
         _players[player].chargeForth();
     }
     displayStats();
 }
-void Game::saveStateToFile(){
+void Game::saveStateToFile()
+{
     ofstream out_file("gameState.txt");
-    for(int i = 0; i < _numPlayers; i++){
+    for (int i = 0; i < _numPlayers; i++)
+    {
         Stats pStat = _players[i].printFinalStats();
         out_file << pStat.name << endl;
         out_file << "  " << pStat.display << endl;
-        out_file << "_______________________" << endl << endl;
+        out_file << "_______________________" << endl
+                 << endl;
     }
-
-
 }
-void Game::firstTurn(){
-    for(int i = 0; i < _numPlayers; i++){
+void Game::firstTurn()
+{
+    for (int i = 0; i < _numPlayers; i++)
+    {
         pickPath(i);
         _board.displayBoard(_players);
         turn(i);
     }
 }
-void Game::basicTileDisplay(string name, vector <string> text){
-    Menu tileDisplay(_MENU,name,text);
+void Game::basicTileDisplay(string name, vector<string> text)
+{
+    Menu tileDisplay(_MENU, name, text);
     tileDisplay.displayMenu();
-    tileDisplay.enterText(9,2);
+    tileDisplay.enterText(9, 2);
 }
-bool Game::riddleTile(string name,vector <string> text){
+bool Game::riddleTile(string name, vector<string> text)
+{
     int riddleNum = rand() % _riddles.size();
     string riddle = _riddles.at(riddleNum);
     stringstream riddleStream(riddle);
     string temp;
-    getline(riddleStream,temp,'|');
+    getline(riddleStream, temp, '|');
     int type = stoi(temp);
     string riddleText;
-    getline(riddleStream,riddleText,'|');
+    getline(riddleStream, riddleText, '|');
     text.push_back(riddleText);
-    if (type == 1){
-        //free response
+    if (type == 1)
+    {
+        // free response
         string answer;
-        getline(riddleStream,answer);
-        Menu tileDisplay(_MENU,name,text);
+        getline(riddleStream, answer);
+        Menu tileDisplay(_MENU, name, text);
         tileDisplay.displayMenu();
-        if(tileDisplay.enterText(9,2) == answer){
+        if (tileDisplay.enterText(9, 2) == answer)
+        {
             return true;
-        } else{
+        }
+        else
+        {
             return false;
-            }
-    } else if(type != 0){
-        //multiple choice
+        }
+    }
+    else if (type != 0)
+    {
+        // multiple choice
         riddleStream << '|';
-        vector <string> riddleResponses(type);
+        vector<string> riddleResponses(type);
         int answer = 0;
-        for(int i = 0; i < type; i ++){
+        for (int i = 0; i < type; i++)
+        {
             int idx = rand() % type;
-            if(riddleResponses[idx] == ""){
-                if(i == 0){
+            if (riddleResponses[idx] == "")
+            {
+                if (i == 0)
+                {
                     answer = idx;
                 }
-                getline(riddleStream,temp,'|');
+                getline(riddleStream, temp, '|');
                 riddleResponses[idx] = temp;
-            }else{
+            }
+            else
+            {
                 i--;
             }
         }
-        Menu tileDisplay(_MENU,name,text,riddleResponses,{});
+        Menu tileDisplay(_MENU, name, text, riddleResponses, {});
         tileDisplay.displayMenu();
-        if(tileDisplay.getChoice(7,2) == answer){
+        if (tileDisplay.getChoice(7, 2) == answer)
+        {
             return true;
-        } else{
+        }
+        else
+        {
             return false;
         }
     }
     return false;
-}   
-void Game::eventTile(string name,int player){
-    
+}
+void Game::eventTile(string name, int player)
+{
+
     string temp;
-    int pPos[2] = {0,0};
+    int pPos[2] = {0, 0};
     int pathType = -1;
     _players[player].getPos(pPos);
     stringstream eventString;
@@ -415,188 +494,213 @@ void Game::eventTile(string name,int player){
     string eventPass;
     string eventFail;
     int eventNum = rand() % (_events.size());
-    do{
+    do
+    {
         eventNum = rand() % (_events.size());
         string event = _events.at(eventNum);
         eventString.str(event);
-        getline(eventString,eventText,'|');
-        getline(eventString,eventPass,'|');
-        getline(eventString,eventFail,'|');
-        getline(eventString,temp,'|'); 
+        getline(eventString, eventText, '|');
+        getline(eventString, eventPass, '|');
+        getline(eventString, eventFail, '|');
+        getline(eventString, temp, '|');
         pathType = stoi(temp);
-    }while((pathType != pPos[0])&&(pathType != 2));
-    getline(eventString,temp,'|');
+    } while ((pathType != pPos[0]) && (pathType != 2));
+    getline(eventString, temp, '|');
     int eventCondType = stoi(temp);
-    getline(eventString,temp,'|');
+    getline(eventString, temp, '|');
     int eventCond = stoi(temp);
-    getline(eventString,temp);
+    getline(eventString, temp);
     int eventPoints = stoi(temp);
-    
-    
-    bool condPass = testCond(eventCondType,eventCond,player);
-    if(eventPoints < 0){
-        if(!condPass){
+
+    bool condPass = testCond(eventCondType, eventCond, player);
+    if (eventPoints < 0)
+    {
+        if (!condPass)
+        {
             _players[player].addBugsPoints(eventPoints);
         }
-    }else{
-        if(condPass){
+    }
+    else
+    {
+        if (condPass)
+        {
             _players[player].addBugsPoints(eventPoints);
         }
     }
     temp = (condPass) ? eventPass : eventFail;
-    Menu tileDisplay(_MENU,name,{eventText,temp});
-    
+    Menu tileDisplay(_MENU, name, {eventText, temp});
+
     tileDisplay.displayMenu();
-    tileDisplay.enterText(9,2);
-
-
+    tileDisplay.enterText(9, 2);
 }
-void Game::initCompanionList(string filename){
+void Game::initCompanionList(string filename)
+{
     ifstream in_file(filename);
     string temp;
     string temp2;
-    getline(in_file,temp);
+    getline(in_file, temp);
     stringstream line;
-    while(getline(in_file,temp)){
+    while (getline(in_file, temp))
+    {
         line.str(temp);
-        getline(line,temp2,'|');
+        getline(line, temp2, '|');
         _companions.push_back(temp2);
     }
-
 }
-bool Game::testCond(int condType, int cond, int pNum){
+bool Game::testCond(int condType, int cond, int pNum)
+{
     Player player = _players[pNum];
-    switch(condType){
-        //(0 = Companion; 1 = Age; 2 = Strength; 3 = Stamina; 4 = Provisions)
-        case 0:
-            //companion
-            if (player.getCompanion().at(0) == _companions.at(cond-1)){
-                return true;
-            }
-            break;
-        case 1:
-            //age
-            if(player.getAge() >= cond){
-                return true;
-            }
-            break;
-        case 2:    
-            //strength
-            if(player.getStrength() >= cond){
-                return true;
-            }
-            break;
-        case 3:
-            //stamina
-            if(player.getStamina() >= cond){
-                return true;
-            }            
-            break;
-        case 4:
-            //provisions
-            if(player.getProvisions() >= cond){
-                return true;
-            }
-            break;
+    switch (condType)
+    {
+    //(0 = Companion; 1 = Age; 2 = Strength; 3 = Stamina; 4 = Provisions)
+    case 0:
+        // companion
+        if (player.getCompanion().at(0) == _companions.at(cond - 1))
+        {
+            return true;
+        }
+        break;
+    case 1:
+        // age
+        if (player.getAge() >= cond)
+        {
+            return true;
+        }
+        break;
+    case 2:
+        // strength
+        if (player.getStrength() >= cond)
+        {
+            return true;
+        }
+        break;
+    case 3:
+        // stamina
+        if (player.getStamina() >= cond)
+        {
+            return true;
+        }
+        break;
+    case 4:
+        // provisions
+        if (player.getProvisions() >= cond)
+        {
+            return true;
+        }
+        break;
     }
-    //did not pass condition
+    // did not pass condition
     return false;
 }
-void Game::initTiles(){
+void Game::initTiles()
+{
     _board.initializeBoard();
     ifstream in_file("riddles.txt");
-    if(!in_file.is_open()){
+    if (!in_file.is_open())
+    {
         throw;
-        }
+    }
     string temp;
-    getline(in_file,temp);
-    while(getline(in_file,temp)){
+    getline(in_file, temp);
+    while (getline(in_file, temp))
+    {
         _riddles.push_back(temp);
     }
 
     ifstream in_file2("events.txt");
-    if(!in_file2.is_open()){
+    if (!in_file2.is_open())
+    {
         throw;
-        }
-    getline(in_file2,temp);
-    while(getline(in_file2,temp)){
+    }
+    getline(in_file2, temp);
+    while (getline(in_file2, temp))
+    {
         _events.push_back(temp);
     }
     initCompanionList("companions.txt");
 }
-void Game::findTraveler(string name, vector <string> text, int pNum){
-    Menu tileDisplay(_MENU,name,text,{"Yes","No"},{});
-            tileDisplay.displayMenu();
-            if(tileDisplay.getChoice(9,2) == 0){
-            _players[pNum].addProvisions(300);
-            _players[pNum].addStamina(300);
-            _players[pNum].addStrength(300);
-            _players[pNum].setCompanion(getCompanion());
-            displayCompanion(pNum);
-            }
+void Game::findTraveler(string name, vector<string> text, int pNum)
+{
+    Menu tileDisplay(_MENU, name, text, {"Yes", "No"}, {});
+    tileDisplay.displayMenu();
+    if (tileDisplay.getChoice(9, 2) == 0)
+    {
+        _players[pNum].addProvisions(300);
+        _players[pNum].addStamina(300);
+        _players[pNum].addStrength(300);
+        _players[pNum].setCompanion(getCompanion());
+        displayCompanion(pNum);
+    }
 }
-void Game::executeTile(char tile,int pNum, int roll){
+void Game::executeTile(char tile, int pNum, int roll)
+{
     string name = "";
-    vector <string> text;
-    switch(tile){
-        case 'B':
-            name = "River Crossing";
-            text = {"The, in retrospect, really", "poorly-constructed bridge","collapses beneath you.", "You have to backtrack to", "find the trail again.","Move back 10 and lose", "stats"};
-            _players[pNum].addProvisions(-100);
-            _players[pNum].addStamina(-100);
-            _players[pNum].addStrength(-100);
-            _players[pNum].changePos(-10);
-            basicTileDisplay(name,text);
+    vector<string> text;
+    switch (tile)
+    {
+    case 'B':
+        name = "River Crossing";
+        text = {"The, in retrospect, really", "poorly-constructed bridge", "collapses beneath you.", "You have to backtrack to", "find the trail again.", "Move back 10 and lose", "stats"};
+        _players[pNum].addProvisions(-100);
+        _players[pNum].addStamina(-100);
+        _players[pNum].addStrength(-100);
+        _players[pNum].changePos(-10);
+        basicTileDisplay(name, text);
         break;
-        case 'R':
-            name = "Boulder Trap";
-            text = {"A giant rock starts", "rolling towards you.", "You have to jump out of its","way","Move back and lose", "stamina"};
-            _players[pNum].addStamina(-300);
-            _players[pNum].changePos(-1 * roll);
-            basicTileDisplay(name,text);
+    case 'R':
+        name = "Boulder Trap";
+        text = {"A giant rock starts", "rolling towards you.", "You have to jump out of its", "way", "Move back and lose", "stamina"};
+        _players[pNum].addStamina(-300);
+        _players[pNum].changePos(-1 * roll);
+        basicTileDisplay(name, text);
         break;
-        case 'T':
-            name = "Traveler";
-            text = {"You find a traveler", "Pick them up?"};
-            findTraveler(name,text,pNum);
+    case 'T':
+        name = "Traveler";
+        text = {"You find a traveler", "Pick them up?"};
+        findTraveler(name, text, pNum);
         break;
-        case 'O':
-            name = "Oasis";
-            text = {"You find an oasis", "Take an extra turn"};
-            _players[pNum].addProvisions(200);
-            _players[pNum].addStamina(200);
-            _players[pNum].addStrength(200);
-            basicTileDisplay(name,text);
-            turn(pNum);
+    case 'O':
+        name = "Oasis";
+        text = {"You find an oasis", "Take an extra turn"};
+        _players[pNum].addProvisions(200);
+        _players[pNum].addStamina(200);
+        _players[pNum].addStrength(200);
+        basicTileDisplay(name, text);
+        turn(pNum);
         break;
-        case 'C':
-            name = "Riddle";
-            text = {"A strange man asks you:"};
+    case 'C':
+        name = "Riddle";
+        text = {"A strange man asks you:"};
 
-            if(riddleTile(name,text)){
-                //got riddle right
-                _players[pNum].addProvisions(500);
-                basicTileDisplay(name,{"Correct!","He gives you some supplies for the help","Press enter to move on"});
-            } else{
-                //got riddle wrong
-                basicTileDisplay(name,{"Incorrect!","Better luck next time","Press enter to move on"});
-            }
+        if (riddleTile(name, text))
+        {
+            // got riddle right
+            _players[pNum].addProvisions(500);
+            basicTileDisplay(name, {"Correct!", "He gives you some supplies for the help", "Press enter to move on"});
+        }
+        else
+        {
+            // got riddle wrong
+            basicTileDisplay(name, {"Incorrect!", "Better luck next time", "Press enter to move on"});
+        }
         break;
-        case 'G':
-            name = "Grasslands";
-            //TODO change 3 back to 0
-            if((rand() % 2) == 0){
-                text = {"Nothing Happens"};
-                basicTileDisplay(name,text);
-            }else{
-                eventTile(name,pNum);
-            }
+    case 'G':
+        name = "Grasslands";
+        // TODO change 3 back to 0
+        if ((rand() % 2) == 0)
+        {
+            text = {"Nothing Happens"};
+            basicTileDisplay(name, text);
+        }
+        else
+        {
+            eventTile(name, pNum);
+        }
         break;
     }
-
-        
 }
-void Game::turn(int pNum){
+void Game::turn(int pNum)
+{
     werase(_ROLL);
     wrefresh(_ROLL);
     Menu charMenu(_MENU, _players[pNum].getName(), {"Press Enter to Roll"});
@@ -604,51 +708,66 @@ void Game::turn(int pNum){
     charMenu.enterText(3, 2);
     displayRoll();
     int roll = rollDie();
-    
+
     _players[pNum].changePos(roll);
     _board.displayBoard(_players);
-    
+
     refresh();
     wrefresh(_BOARD);
     int pPos[2];
     _players[pNum].getPos(pPos);
-    for(int i = 0 ; i <_numPlayers; i ++){
-        
-        if(!(i == pNum)){
+    for (int i = 0; i < _numPlayers; i++)
+    {
+
+        if (!(i == pNum))
+        {
             int p2Pos[2];
             _players[i].getPos(p2Pos);
-            if((p2Pos[0] == pPos[0] )&&(p2Pos[1] == pPos[1])){
-                playerBattle(pNum,i);
+            if ((p2Pos[0] == pPos[0]) && (p2Pos[1] == pPos[1]))
+            {
+                playerBattle(pNum, i);
             }
         }
     }
-    char tile = _board.getTileType(pPos[0],pPos[1]);
-    executeTile(tile,pNum,roll);
+    char tile = _board.getTileType(pPos[0], pPos[1]);
+    executeTile(tile, pNum, roll);
 }
-bool Game::runTurn(){
+bool Game::runTurn()
+{
     int playersWon = 0;
-    for(int i = 0; i < _numPlayers; i++){
+    for (int i = 0; i < _numPlayers; i++)
+    {
         int ppos[2];
         _players[i].getPos(ppos);
-        if(ppos[1] < 51){
+        if (ppos[1] < 51)
+        {
             displayCompanion(i);
             _board.displayBoard(_players);
             turn(i);
-        } else{
+        }
+        else
+        {
             playersWon += 1;
         }
     }
-    if(playersWon == _numPlayers){
+    if (playersWon == _numPlayers)
+    {
         return false;
-    } else {return true;}
+    }
+    else
+    {
+        return true;
+    }
 }
-void Game::displayCompanion(int pNum){
+void Game::displayCompanion(int pNum)
+{
     wclear(_COMPANION);
-    box(_COMPANION, 0,0);
+    box(_COMPANION, 0, 0);
     mvwaddstr(_COMPANION, 0, 1, "Companion");
-    vector <string> companion = _players[pNum].getCompanion();
-    for(int i = 0; i < 3; i++){
-        mvwaddstr(_COMPANION, 1+i,2, companion[i].c_str());
+    vector<string> companion = _players[pNum].getCompanion();
+    for (int i = 0; i < 3; i++)
+    {
+        mvwaddstr(_COMPANION, 1 + i, 2, companion[i].c_str());
     }
     wrefresh(_COMPANION);
 }
