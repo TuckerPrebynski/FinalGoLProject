@@ -18,6 +18,7 @@ private:
     int _strength, _stamina, _provisions, _bugs_points, _age;
     int _board;
     int _idx, _lastIdx;
+    bool isSkipped = false;
     char _meeple;
     /// @brief checks if value is between two bounds. If outside of bounds, returns closest bound; else, returns the value
     /// @param v the value to check
@@ -133,7 +134,19 @@ public:
             _age = 20;
         }
     }
-
+    void skip()
+    {
+        isSkipped = true;
+    }
+    bool skipCheck()
+    {
+        if(isSkipped){
+            isSkipped = false;
+            return true;
+        }else{
+            return false;
+        }
+    }
     // Other
     // This function can be called with a player chooses to train their cub at the start of the game instead of going straight to the pride lands. This should increase the cub’s strength, stamina, and provisions by the parameters given. It should also decrease the pride points by -5,000.
     void rememberToPack(int strength, int stamina, int provisions)

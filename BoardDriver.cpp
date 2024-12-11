@@ -66,6 +66,16 @@ Tile Board::fillTile(Tile tile, char type)
         tile.type = 'C';
         tile.disp[1] = '$';
         break;
+    case 'D':
+        tile.color = BOULDER_COLOR;
+        tile.type = 'D';
+        tile.disp[1] = '^';
+        break;
+    case 'M':
+        tile.color = BRIDGE_COLOR;
+        tile.type = 'M';
+        tile.disp[1] = '#';
+        break;
     }
     return tile;
 }
@@ -88,7 +98,11 @@ char Board::generateTile(int track, int idx)
             // did not pack
             if (track == 0)
             {
-                if (roll < 5)
+                if(roll < 4)
+                {
+                    return 'D'; //downpour
+                }
+                else if (roll < 7)
                 {
                     return 'B'; // Bridge
                 }
@@ -164,7 +178,11 @@ char Board::generateTile(int track, int idx)
             }
             else
             {
-                if (roll < 4)
+                if(roll < 2)
+                {
+                    return 'M'; //Mud
+                }
+                else if (roll < 5)
                 {
                     return 'B'; // Bridge
                 }

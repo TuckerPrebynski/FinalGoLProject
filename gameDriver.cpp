@@ -81,9 +81,9 @@ void Game::playerBattle(int p1, int p2)
         string pChoice = playerMenu.enterText(-1, 2);
         while ((pChoice != "z") && (pChoice != "x") && (pChoice != "c"))
         {
-            playerMenu.changeText({"Rock Paper Scissors", "Press either Rock(z) Paper(x) or Scissors(c) then enter", "Not an option. Try again"});
+            playerMenu.changeText({"Rock Paper Scissors", "Press either Rock(z) Paper(x) or Scissors(c) then enter Not an option. Try again"});
             playerMenu.displayMenu();
-            string pChoice = playerMenu.enterText(-1, 2);
+            pChoice = playerMenu.enterText(-1, 2);
         }
         throws[i] = pChoice;
     }
@@ -144,7 +144,7 @@ void Game::pBWin(int winner, int loser)
     _players[loser].addBugsPoints(-1 * pointSteal);
     _players[winner].addBugsPoints(pointSteal);
     displayStats();
-    winMenu.enterText(5, 2);
+    winMenu.enterText(-1, 2);
     displayRoll();
     int roll = rollDie();
     _players[loser].changePos(roll * -1);
@@ -152,6 +152,7 @@ void Game::pBWin(int winner, int loser)
 }
 void Game::displayStats()
 {
+    wclear(_STATS);
     box(_STATS, 0, 0);
     mvwaddstr(_STATS, 0, 1, "Leaderboard");
     mvwaddstr(_STATS, 1, 2, "age|str|stamina|provis|bugs");
@@ -355,12 +356,13 @@ void Game::displayLegend()
     init_pair(BRIDGE_COLOR, COLOR_BLACK, COLOR_BLUE);
     init_pair(BOULDER_COLOR, COLOR_WHITE, COLOR_BLACK);
     init_pair(CHALLENGE_COLOR, COLOR_WHITE, COLOR_MAGENTA);
-    string tilesName[] = {"Start", "Finish", "Plains", "Oasis", "Bridge", "Boulder", "Companion", "Challenge"};
-    int tilesColor[] = {START_COLOR, END_COLOR, PLAIN_COLOR, OASIS_COLOR, BRIDGE_COLOR, BOULDER_COLOR, BOULDER_COLOR, CHALLENGE_COLOR};
-    string tilesDisp[] = {"| |", "| |", "| |", "|~|", "|=|", "|o|", "|&|", "|?|"};
+    string tilesName[] = { "Finish", "Plains", "Oasis", "Bridge", "Boulder", "Companion", "Challenge","Downpour","Mud"};
+    int tilesColor[] = { END_COLOR, PLAIN_COLOR, OASIS_COLOR, BRIDGE_COLOR, BOULDER_COLOR, BOULDER_COLOR, CHALLENGE_COLOR,BOULDER_COLOR,BRIDGE_COLOR};
+    string tilesDisp[] = {"| |", "| |", "|~|", "|=|", "|o|", "|&|", "|?|","|^|","|#|"};
     int startRow = 2;
     int startCol = 1;
-    for (int i = 0; i < 8; i++)
+    
+    for (int i = 0; i < 9; i++)
     {
         string disp = tilesDisp[i];
         wmove(_LEGEND, startCol + i, startRow);
@@ -531,7 +533,7 @@ void Game::eventTile(string name, int player)
     Menu tileDisplay(_MENU, name, {eventText, temp});
 
     tileDisplay.displayMenu();
-    tileDisplay.enterText(9, 2);
+    tileDisplay.enterText(10, 2);
 }
 void Game::initCompanionList(string filename)
 {
@@ -632,6 +634,7 @@ void Game::findTraveler(string name, vector<string> text, int pNum)
         displayCompanion(pNum);
     }
 }
+
 void Game::executeTile(char tile, int pNum, int roll)
 {
     string name = "";
@@ -644,7 +647,7 @@ void Game::executeTile(char tile, int pNum, int roll)
         _players[pNum].addProvisions(-100);
         _players[pNum].addStamina(-100);
         _players[pNum].addStrength(-100);
-        _players[pNum].changePos(-10);
+        _players[pNum].changePos(-5);
         basicTileDisplay(name, text);
         break;
     case 'R':
@@ -697,6 +700,22 @@ void Game::executeTile(char tile, int pNum, int roll)
             eventTile(name, pNum);
         }
         break;
+    case 'D':
+        name = "Downpour";
+        text = {"You wish you had packed an umbrella","Some of your meager supplies get soaked","You spend a turn trying to salvage them"};
+        _players[pNum].addProvisions(-300);
+        _players[pNum].skip();
+        basicTileDisplay(name, text);
+        
+        break;
+    case 'M':
+        name = "Mud";
+        text = {"Your heavy pack weighs you down", "You spend a turn digging your boots from the muck"};
+        _players[pNum].addStamina(-300);
+        basicTileDisplay(name, text);
+        _players[pNum].skip();
+        break;
+    
     }
 }
 void Game::turn(int pNum)
@@ -723,7 +742,7 @@ void Game::turn(int pNum)
         {
             int p2Pos[2];
             _players[i].getPos(p2Pos);
-            if ((p2Pos[0] == pPos[0]) && (p2Pos[1] == pPos[1]))
+            if ((p2Pos[0] == pPos[0]) && (p2Pos[1] == pPos[1]) && (pPos[1] < 50))
             {
                 playerBattle(pNum, i);
             }
@@ -741,9 +760,11 @@ bool Game::runTurn()
         _players[i].getPos(ppos);
         if (ppos[1] < 51)
         {
-            displayCompanion(i);
-            _board.displayBoard(_players);
-            turn(i);
+            if(!_players[i].skipCheck()){
+                displayCompanion(i);
+                _board.displayBoard(_players);
+                turn(i);
+            }
         }
         else
         {

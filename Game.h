@@ -77,8 +77,9 @@ private:
     void executeTile(char tile,int pNum,int roll);
     void basicTileDisplay(string name, vector <string> text);
     bool riddleTile(string name,vector <string> text);
-    void findTraveler(string name, vector <string> text, int pNum);
+    void findTraveler(string name, vector <string> text, int pNum); 
     bool testCond(int condType, int cond, int pNum);
     void initCompanionList(string filename);
 };
+
 #endif

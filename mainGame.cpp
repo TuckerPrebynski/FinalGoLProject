@@ -34,15 +34,16 @@ int main()
     initscr();
     noecho();
     cbreak();
+    curs_set(0);
     //debug << "ncurses init \n";
     WINDOW *menuWin = newwin(15, 30, LINES - 26, 63);
-    WINDOW *legendWin = newwin(10, 15, LINES - 26, 31);
+    WINDOW *legendWin = newwin(11, 16, LINES - 26, 31);
     WINDOW *menuLongWin = newwin(25, 30, LINES -26, 63);
 
     WINDOW *boardWin = newwin(7, 200, LINES - 10, 1);
-    WINDOW *statsWin = newwin(15, 30, LINES - 26, 1);
-    WINDOW *companionWin = newwin(5, 30, LINES - 16, 32);
-    WINDOW *rollWin = newwin(10, 15, LINES - 26, 47);
+    WINDOW *statsWin = newwin(16, 30, LINES - 26, 1);
+    WINDOW *companionWin = newwin(5, 31, LINES - 15, 31);
+    WINDOW *rollWin = newwin(10, 15, LINES - 25, 47);
     Game gameState(boardWin,menuWin,menuLongWin,statsWin,rollWin, companionWin,legendWin);
     //addstr("debug");  
     //getch();
